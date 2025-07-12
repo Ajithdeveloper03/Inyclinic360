@@ -906,7 +906,7 @@ const LandingPage = () => {
               <h3 className="text-lg font-semibold mb-4">Company</h3>
               <ul className="space-y-2 text-gray-400">
                 <li><a href="#" className="hover:text-white">About Us</a></li>
-                <li><a href="#" className="hover:text-white">Privacy Policy</a></li>
+                <li><a href="#" className="hover:text-white">Refund Policy</a></li>
                 <li><a href="#" className="hover:text-white">Terms of Service</a></li>
                 <li><a href="#" className="hover:text-white">Contact</a></li>
               </ul>
