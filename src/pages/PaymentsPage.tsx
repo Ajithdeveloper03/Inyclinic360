@@ -1,21 +1,21 @@
 import React, { useState } from 'react';
 import DashboardLayout from '../components/DashboardLayout';
-import { CreditCard, DollarSign, Calendar, Download, Plus, Eye } from 'lucide-react';
+import { CreditCard, IndianRupee, Calendar, Download, Plus, Eye } from 'lucide-react';
 
 const PaymentsPage = () => {
   const [selectedTab, setSelectedTab] = useState('history');
 
   const paymentHistory = [
-    { id: 1, date: '2024-11-28', amount: '$150.00', description: 'Cardiology Consultation', doctor: 'Dr. Sarah Johnson', status: 'paid', method: 'Credit Card' },
-    { id: 2, date: '2024-11-15', amount: '$75.00', description: 'Lab Tests', doctor: 'Dr. Michael Brown', status: 'paid', method: 'Insurance' },
-    { id: 3, date: '2024-10-30', amount: '$200.00', description: 'Orthopedic Consultation', doctor: 'Dr. Emily Smith', status: 'pending', method: 'Credit Card' },
-    { id: 4, date: '2024-10-15', amount: '$50.00', description: 'Prescription Refill', doctor: 'Dr. Sarah Johnson', status: 'paid', method: 'Debit Card' },
-    { id: 5, date: '2024-09-20', amount: '$25.00', description: 'Vaccination', doctor: 'Dr. Lisa Davis', status: 'paid', method: 'Cash' }
+    { id: 1, date: '2024-11-28', amount: '₹150.00', description: 'Cardiology Consultation', doctor: 'Dr. Sarah', status: 'paid', method: 'Credit Card' },
+    { id: 2, date: '2024-11-15', amount: '₹75.00', description: 'Lab Tests', doctor: 'Dr. Michael', status: 'paid', method: 'Cash' },
+    { id: 3, date: '2024-10-30', amount: '₹200.00', description: 'Orthopedic Consultation', doctor: 'Dr. Emily', status: 'pending', method: 'Credit Card' },
+    { id: 4, date: '2024-10-15', amount: '₹50.00', description: 'Prescription Refill', doctor: 'Dr. Sarah', status: 'paid', method: 'Debit Card' },
+    { id: 5, date: '2024-09-20', amount: '₹25.00', description: 'Vaccination', doctor: 'Dr. Lisa', status: 'paid', method: 'Cash' }
   ];
 
   const upcomingPayments = [
-    { id: 6, date: '2024-12-15', amount: '$150.00', description: 'Cardiology Follow-up', doctor: 'Dr. Sarah Johnson', dueDate: '2024-12-20' },
-    { id: 7, date: '2024-12-20', amount: '$300.00', description: 'MRI Scan', doctor: 'Dr. Michael Brown', dueDate: '2024-12-25' }
+    { id: 6, date: '2024-12-15', amount: '₹150.00', description: 'Cardiology Follow-up', doctor: 'Dr. Sarah Johnson', dueDate: '2024-12-20' },
+    { id: 7, date: '2024-12-20', amount: '₹300.00', description: 'MRI Scan', doctor: 'Dr. Michael Brown', dueDate: '2024-12-25' }
   ];
 
   const getStatusColor = (status: string) => {
@@ -27,9 +27,9 @@ const PaymentsPage = () => {
     }
   };
 
-  const totalPaid = paymentHistory.filter(p => p.status === 'paid').reduce((sum, p) => sum + parseFloat(p.amount.replace('$', '')), 0);
-  const totalPending = paymentHistory.filter(p => p.status === 'pending').reduce((sum, p) => sum + parseFloat(p.amount.replace('$', '')), 0);
-  const totalUpcoming = upcomingPayments.reduce((sum, p) => sum + parseFloat(p.amount.replace('$', '')), 0);
+  const totalPaid = paymentHistory.filter(p => p.status === 'paid').reduce((sum, p) => sum + parseFloat(p.amount.replace('₹', '')), 0);
+  const totalPending = paymentHistory.filter(p => p.status === 'pending').reduce((sum, p) => sum + parseFloat(p.amount.replace('₹', '')), 0);
+  const totalUpcoming = upcomingPayments.reduce((sum, p) => sum + parseFloat(p.amount.replace('₹', '')), 0);
 
   return (
     <DashboardLayout>
@@ -51,15 +51,15 @@ const PaymentsPage = () => {
         </div>
 
         {/* Payment Summary Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
           <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600 dark:text-gray-400">Total Paid</p>
-                <p className="text-2xl font-bold text-gray-900 dark:text-white">${totalPaid.toFixed(2)}</p>
+                <p className="text-2xl font-bold text-gray-900 dark:text-white">₹{totalPaid.toFixed(2)}</p>
               </div>
               <div className="w-12 h-12 bg-green-100 dark:bg-green-900/20 rounded-xl flex items-center justify-center">
-                <DollarSign className="h-6 w-6 text-green-600 dark:text-green-400" />
+                <IndianRupee className="h-6 w-6 text-green-600 dark:text-green-400" />
               </div>
             </div>
             <p className="text-sm text-green-600 dark:text-green-400 mt-2">This year</p>
@@ -69,20 +69,20 @@ const PaymentsPage = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600 dark:text-gray-400">Pending</p>
-                <p className="text-2xl font-bold text-gray-900 dark:text-white">${totalPending.toFixed(2)}</p>
+                <p className="text-2xl font-bold text-gray-900 dark:text-white">₹{totalPending.toFixed(2)}</p>
               </div>
               <div className="w-12 h-12 bg-yellow-100 dark:bg-yellow-900/20 rounded-xl flex items-center justify-center">
-                <DollarSign className="h-6 w-6 text-yellow-600 dark:text-yellow-400" />
+                <IndianRupee className="h-6 w-6 text-yellow-600 dark:text-yellow-400" />
               </div>
             </div>
             <p className="text-sm text-yellow-600 dark:text-yellow-400 mt-2">Awaiting payment</p>
           </div>
 
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6">
+          {/* <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600 dark:text-gray-400">Upcoming</p>
-                <p className="text-2xl font-bold text-gray-900 dark:text-white">${totalUpcoming.toFixed(2)}</p>
+                <p className="text-2xl font-bold text-gray-900 dark:text-white">₹{totalUpcoming.toFixed(2)}</p>
               </div>
               <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/20 rounded-xl flex items-center justify-center">
                 <Calendar className="h-6 w-6 text-blue-600 dark:text-blue-400" />
@@ -102,7 +102,7 @@ const PaymentsPage = () => {
               </div>
             </div>
             <p className="text-sm text-purple-600 dark:text-purple-400 mt-2">Average coverage</p>
-          </div>
+          </div> */}
         </div>
 
         {/* Tabs */}

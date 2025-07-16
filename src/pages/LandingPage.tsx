@@ -823,7 +823,7 @@ const LandingPage = () => {
                   <h4 className="font-medium text-gray-900 dark:text-white mb-2">What to Expect:</h4>
                   <ul className="text-sm text-gray-600 dark:text-gray-400 space-y-1">
                     <li>• Live walkthrough of features relevant to your practice</li>
-                    <li>• Q&A session with our healthcare technology experts</li>
+                    {/* <li>• Q&A session with our healthcare technology experts</li> */}
                     <li>• Custom pricing discussion based on your needs</li>
                     <li>• Free trial setup if you're interested</li>
                   </ul>
@@ -863,7 +863,7 @@ const LandingPage = () => {
           <div className="grid md:grid-cols-4 gap-8 mb-8">
             <div>
               <div className="flex items-center mb-4">
-                <Heart className="h-8 w-8 text-blue-400" />
+                <img src={Logo} className='h-10'/>
                 <span className="ml-2 text-2xl font-bold">INYClinic 360°</span>
               </div>
               <p className="text-gray-400 mb-4">
@@ -918,7 +918,7 @@ const LandingPage = () => {
               © 2025 INYClinic 360° by <a href="https://www.inymart.in" target="_blank">Inymart Digi Solutions</a>. All rights reserved.
             </p>
             <p className="text-gray-500 text-sm mt-2">
-              Transforming healthcare through technology | Trichy, Tamil Nadu, India | Updated: Jul 11, 2025, 04:48 PM IST
+              Transforming healthcare through technology
             </p>
           </div>
         </div>

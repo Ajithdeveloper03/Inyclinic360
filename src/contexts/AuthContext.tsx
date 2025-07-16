@@ -63,7 +63,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           // For clinic users (doctor, nurse, admin)
           newUser = {
             id: '2',
-            name: 'Dr. Sarah Johnson',
+            name: 'Dr. Vikash',
             email,
             role: 'doctor',
             department: 'Cardiology',

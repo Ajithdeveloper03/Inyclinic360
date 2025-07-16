@@ -7,6 +7,7 @@ const NotificationCenter = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [loading, setLoading] = useState(false);
+  const [filter, setFilter] = useState<'all' | 'unread' | 'urgent'>('all');
 
   useEffect(() => {
     loadNotifications();
@@ -34,6 +35,10 @@ const NotificationCenter = () => {
   const markAllAsRead = async () => {
     await notificationService.markAllAsRead();
     setNotifications(prev => prev.map(n => ({ ...n, read: true })));
+  };
+
+  const deleteNotification = async (notificationId: string) => {
+    setNotifications(prev => prev.filter(n => n.id !== notificationId));
   };
 
   const getIcon = (type: string) => {
@@ -65,6 +70,13 @@ const NotificationCenter = () => {
   };
 
   const unreadCount = notifications.filter(n => !n.read).length;
+  const filteredNotifications = notifications.filter(n => {
+    switch (filter) {
+      case 'unread': return !n.read;
+      case 'urgent': return n.priority === 'urgent';
+      default: return true;
+    }
+  });
 
   return (
     <div className="relative">
@@ -93,6 +105,15 @@ const NotificationCenter = () => {
                   Notifications
                 </h3>
                 <div className="flex items-center space-x-2">
+                  <select
+                    value={filter}
+                    onChange={(e) => setFilter(e.target.value as any)}
+                    className="text-xs bg-transparent border border-gray-300 dark:border-gray-600 rounded px-2 py-1"
+                  >
+                    <option value="all">All</option>
+                    <option value="unread">Unread</option>
+                    <option value="urgent">Urgent</option>
+                  </select>
                   {unreadCount > 0 && (
                     <button
                       onClick={markAllAsRead}
@@ -122,13 +143,12 @@ const NotificationCenter = () => {
                 </div>
               ) : (
                 <div className="divide-y divide-gray-200 dark:divide-gray-700">
-                  {notifications.map((notification) => (
+                  {filteredNotifications.map((notification) => (
                     <div
                       key={notification.id}
                       className={`p-4 hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer border-l-4 ${getPriorityColor(notification.priority)} ${
                         !notification.read ? 'bg-blue-50 dark:bg-blue-900/10' : ''
                       }`}
-                      onClick={() => markAsRead(notification.id)}
                     >
                       <div className="flex items-start space-x-3">
                         <div className="flex-shrink-0 mt-1">
@@ -143,9 +163,22 @@ const NotificationCenter = () => {
                             }`}>
                               {notification.title}
                             </p>
-                            {!notification.read && (
-                              <div className="w-2 h-2 bg-blue-600 rounded-full"></div>
-                            )}
+                            <div className="flex items-center space-x-2">
+                              {!notification.read && (
+                                <button
+                                  onClick={() => markAsRead(notification.id)}
+                                  className="text-xs text-blue-600 hover:text-blue-500 dark:text-blue-400"
+                                >
+                                  Mark Read
+                                </button>
+                              )}
+                              <button
+                                onClick={() => deleteNotification(notification.id)}
+                                className="text-xs text-red-600 hover:text-red-500 dark:text-red-400"
+                              >
+                                ×
+                              </button>
+                            </div>
                           </div>
                           <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
                             {notification.message}
@@ -161,7 +194,7 @@ const NotificationCenter = () => {
               )}
             </div>
 
-            {notifications.length > 0 && (
+            {filteredNotifications.length > 0 && (
               <div className="p-3 border-t border-gray-200 dark:border-gray-700">
                 <button className="w-full text-center text-sm text-blue-600 hover:text-blue-500 dark:text-blue-400 font-medium">
                   View All Notifications

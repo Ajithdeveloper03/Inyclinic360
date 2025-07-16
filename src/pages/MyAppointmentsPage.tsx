@@ -11,11 +11,10 @@ const MyAppointmentsPage = () => {
   const [selectedAppointment, setSelectedAppointment] = useState<any>(null);
 
   const [upcomingAppointments, setUpcomingAppointments] = useState([
-    { id: 1, date: 'Dec 15, 2024', time: '10:30 AM', doctor: 'Dr. Sarah Johnson', department: 'Cardiology', status: 'confirmed', type: 'Follow-up', fee: 150, paid: false },
-    { id: 2, date: 'Dec 20, 2024', time: '2:00 PM', doctor: 'Dr. Michael Brown', department: 'Orthopedics', status: 'confirmed', type: 'Consultation', fee: 200, paid: false },
-    { id: 3, date: 'Jan 5, 2025', time: '9:15 AM', doctor: 'Dr. Sarah Johnson', department: 'Cardiology', status: 'scheduled', type: 'Check-up', fee: 150, paid: true }
+    { id: 1, date: 'Dec 15, 2024', time: '10:30 AM', doctor: 'Dr. Sarah Johnson', department: 'Cardiology', status: 'confirmed', type: 'Follow-up', fee: 150, paid: true },
+    { id: 2, date: 'Dec 20, 2024', time: '2:00 PM', doctor: 'Dr. Michael Brown', department: 'Orthopedics', status: 'confirmed', type: 'Consultation', fee: 200, paid: true },
+    { id: 3, date: 'Jan 5, 2025', time: '9:15 AM', doctor: 'Dr. Sarah Johnson', department: 'Cardiology', status: 'scheduled', type: 'Check-up', fee: 150, paid: false }
   ]);
-
 
   const pastAppointments = [
     { id: 4, date: 'Nov 28, 2024', time: '10:30 AM', doctor: 'Dr. Sarah Johnson', department: 'Cardiology', status: 'completed', type: 'Follow-up' },
@@ -187,21 +186,15 @@ const MyAppointmentsPage = () => {
                   <div className="flex items-center space-x-2">
                     {selectedTab === 'upcoming' && (
                       <>
-                        {/* {!appointment.paid && (
+                        {!appointment.paid && (
                           <button 
-                            onClick={() => handlePayNow(appointment)}
+                            // onClick={() => handlePayNow(appointment)}
                             className="text-green-600 hover:text-green-500 dark:text-green-400 text-sm font-medium flex items-center space-x-1"
                           >
                             <span>Pay Now</span>
                           </button>
-                        )} */}
-                        {/* <button 
-                          onClick={() => handleVideoCall(appointment)}
-                          className="text-purple-600 hover:text-purple-500 dark:text-purple-400 text-sm font-medium flex items-center space-x-1"
-                        >
-                          <Video className="h-4 w-4" />
-                          <span>Video Call</span>
-                        </button> */}
+                        )}
+                        
                         <button 
                           onClick={() => handleReschedule(appointment.id)}
                           className="text-blue-600 hover:text-blue-500 dark:text-blue-400 text-sm font-medium"

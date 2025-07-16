@@ -8,11 +8,11 @@ const AppointmentCalendar = () => {
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
 
   const [appointments, setAppointments] = useState([
-    { id: 1, date: '2024-12-15', time: '09:00', patient: 'John Smith', doctor: 'Dr. Johnson', type: 'Consultation' },
-    { id: 2, date: '2024-12-15', time: '10:30', patient: 'Sarah Wilson', doctor: 'Dr. Brown', type: 'Follow-up' },
-    { id: 3, date: '2024-12-16', time: '14:00', patient: 'Michael Davis', doctor: 'Dr. Johnson', type: 'Treatment' },
-    { id: 4, date: '2024-12-17', time: '11:15', patient: 'Emma Thompson', doctor: 'Dr. Smith', type: 'Consultation' },
-    { id: 5, date: '2024-12-18', time: '15:30', patient: 'David Lee', doctor: 'Dr. Brown', type: 'Check-up' }
+    { id: 1, date: '2024-12-15', time: '09:00', patient: 'John Smith', doctor: 'Dr. Johnson', type: 'Consultation', status: 'confirmed', duration: 30 },
+    { id: 2, date: '2024-12-15', time: '10:30', patient: 'Sarah Wilson', doctor: 'Dr. Brown', type: 'Follow-up', status: 'confirmed', duration: 20 },
+    { id: 3, date: '2024-12-16', time: '14:00', patient: 'Michael Davis', doctor: 'Dr. Johnson', type: 'Treatment', status: 'pending', duration: 45 },
+    { id: 4, date: '2024-12-17', time: '11:15', patient: 'Emma Thompson', doctor: 'Dr. Smith', type: 'Consultation', status: 'confirmed', duration: 30 },
+    { id: 5, date: '2024-12-18', time: '15:30', patient: 'David Lee', doctor: 'Dr. Brown', type: 'Check-up', status: 'completed', duration: 25 }
   ]);
 
   const getDaysInMonth = (date: Date) => {
@@ -63,6 +63,29 @@ const AppointmentCalendar = () => {
 
   const handleDeleteAppointment = (id: number) => {
     setAppointments(appointments.filter(apt => apt.id !== id));
+    toast.success('Appointment deleted successfully');
+  };
+
+  const handleRescheduleAppointment = (id: number) => {
+    toast.info('Reschedule feature opened');
+    // In a real app, this would open a reschedule modal
+  };
+
+  const handleCompleteAppointment = (id: number) => {
+    setAppointments(appointments.map(apt => 
+      apt.id === id ? { ...apt, status: 'completed' } : apt
+    ));
+    toast.success('Appointment marked as completed');
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'confirmed': return 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-300';
+      case 'pending': return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-300';
+      case 'completed': return 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200';
+      case 'cancelled': return 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-300';
+      default: return 'bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-300';
+    }
   };
 
   const monthNames = [
@@ -180,11 +203,31 @@ const AppointmentCalendar = () => {
                       {dayAppointments.slice(0, 2).map(apt => (
                         <div
                           key={apt.id}
-                          className="text-xs p-1 bg-blue-100 dark:bg-blue-900/20 text-blue-800 dark:text-blue-200 rounded truncate group relative"
+                          className={`text-xs p-1 rounded truncate group relative ${getStatusColor(apt.status)}`}
                         >
-                          {apt.time} - {apt.patient}
-                          <div className="absolute right-1 top-1 opacity-0 group-hover:opacity-100 flex space-x-1">
-                            <button className="text-green-600 hover:text-green-700">
+                          <div className="flex items-center justify-between">
+                            <span>{apt.time} - {apt.patient}</span>
+                            <span className="text-xs opacity-70">{apt.duration}m</span>
+                          </div>
+                          <div className="absolute right-1 top-1 opacity-0 group-hover:opacity-100 flex space-x-1 bg-white dark:bg-gray-800 rounded p-1">
+                            <button 
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleCompleteAppointment(apt.id);
+                              }}
+                              className="text-green-600 hover:text-green-700"
+                              title="Complete"
+                            >
+                              <CheckCircle className="h-3 w-3" />
+                            </button>
+                            <button 
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleRescheduleAppointment(apt.id);
+                              }}
+                              className="text-blue-600 hover:text-blue-700"
+                              title="Reschedule"
+                            >
                               <Edit className="h-3 w-3" />
                             </button>
                             <button 
@@ -193,6 +236,7 @@ const AppointmentCalendar = () => {
                                 handleDeleteAppointment(apt.id);
                               }}
                               className="text-red-600 hover:text-red-700"
+                              title="Delete"
                             >
                               <Trash2 className="h-3 w-3" />
                             </button>
@@ -285,10 +329,45 @@ const AppointmentCalendar = () => {
                   Doctor
                 </label>
                 <select className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
+                  <option value="">Select Doctor</option>
                   <option>Dr. Johnson</option>
                   <option>Dr. Brown</option>
                   <option>Dr. Smith</option>
                 </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  Appointment Type
+                </label>
+                <select className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
+                  <option value="">Select Type</option>
+                  <option>Consultation</option>
+                  <option>Follow-up</option>
+                  <option>Treatment</option>
+                  <option>Check-up</option>
+                  <option>Emergency</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  Duration (minutes)
+                </label>
+                <select className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
+                  <option value="15">15 minutes</option>
+                  <option value="30">30 minutes</option>
+                  <option value="45">45 minutes</option>
+                  <option value="60">1 hour</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  Notes (optional)
+                </label>
+                <textarea
+                  rows={3}
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                  placeholder="Additional notes or comments"
+                />
               </div>
             </div>
             <div className="flex justify-end space-x-3 mt-6">
@@ -300,7 +379,17 @@ const AppointmentCalendar = () => {
               </button>
               <button
                 onClick={() => {
-                  // Add appointment logic here
+                  const newAppointment = {
+                    id: Date.now(),
+                    date: selectedDate || new Date().toISOString().split('T')[0],
+                    time: '10:00',
+                    patient: 'New Patient',
+                    doctor: 'Dr. Johnson',
+                    type: 'Consultation',
+                    status: 'confirmed',
+                    duration: 30
+                  };
+                  setAppointments([...appointments, newAppointment]);
                   setShowAddModal(false);
                 }}
                 className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors duration-200"

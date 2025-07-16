@@ -5,7 +5,7 @@ import { Zap, Phone, AlertTriangle, Clock, User, MapPin, Activity, Heart } from 
 const EmergencyPage = () => {
   const [emergencyLevel, setEmergencyLevel] = useState<'low' | 'medium' | 'high' | 'critical'>('medium');
   const [activeEmergencies, setActiveEmergencies] = useState([
-    { id: 1, patient: 'Ajith', age: 45, condition: 'Chest Pain', severity: 'critical', time: '5 min ago', location: 'ER Room 1', vitals: { bp: '180/120', hr: '110', temp: '98.6°F' } },
+    { id: 1, patient: 'John Doe', age: 45, condition: 'Chest Pain', severity: 'critical', time: '5 min ago', location: 'ER Room 1', vitals: { bp: '180/120', hr: '110', temp: '98.6°F' } },
     { id: 2, patient: 'Sarah Smith', age: 32, condition: 'Severe Allergic Reaction', severity: 'high', time: '12 min ago', location: 'ER Room 3', vitals: { bp: '90/60', hr: '130', temp: '99.2°F' } },
     { id: 3, patient: 'Mike Johnson', age: 28, condition: 'Broken Arm', severity: 'medium', time: '25 min ago', location: 'ER Room 5', vitals: { bp: '120/80', hr: '85', temp: '98.4°F' } }
   ]);

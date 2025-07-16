@@ -149,30 +149,30 @@ function App() {
                   </ProtectedRoute>
                 } 
               />
-              {/* <Route 
+              <Route 
                 path="/patient-telemedicine" 
                 element={
                   <ProtectedRoute requiredRole="patient">
                     <TelemedicinePage />
                   </ProtectedRoute>
                 } 
-              /> */}
-              {/* <Route 
+              />
+              <Route 
                 path="/health-tracking" 
                 element={
                   <ProtectedRoute requiredRole="patient">
                     <HealthTrackingPage />
                   </ProtectedRoute>
                 } 
-              /> */}
-              {/* <Route 
+              />
+              <Route 
                 path="/insurance" 
                 element={
                   <ProtectedRoute requiredRole="patient">
                     <InsurancePage />
                   </ProtectedRoute>
                 } 
-              /> */}
+              />
               <Route 
                 path="/emergency-contact" 
                 element={

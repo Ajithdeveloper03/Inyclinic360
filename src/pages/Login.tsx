@@ -3,6 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { Heart, Moon, Sun, Eye, EyeOff } from 'lucide-react';
+import Logo from '../assets/logo.png';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -41,9 +42,9 @@ const Login = () => {
         {/* Header */}
         <div className="text-center mb-8">
           <div className="flex items-center justify-center mb-4">
-            <Heart className="h-10 w-10 text-blue-600 dark:text-blue-400" />
+            <img src={Logo} className='h-10'/>
             <span className="ml-2 text-3xl font-bold text-gray-900 dark:text-white">
-              Inyclinic 360
+              Inyclinic 360°
             </span>
           </div>
           <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">

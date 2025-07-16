@@ -79,7 +79,7 @@ const MyRecordsPage = () => {
         </div>
 
         {/* Search and Filters */}
-        <div className="flex items-center justify-between">
+        {/* <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
@@ -96,7 +96,7 @@ const MyRecordsPage = () => {
               {filteredRecords.length} records found
             </span>
           </div>
-        </div>
+        </div> */}
 
         {/* Records Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -143,7 +143,7 @@ const MyRecordsPage = () => {
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
             Quick Actions
           </h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <button className="flex items-center space-x-3 p-4 bg-blue-50 dark:bg-blue-900/20 hover:bg-blue-100 dark:hover:bg-blue-900/30 rounded-lg transition-colors duration-200">
               <Upload className="h-6 w-6 text-blue-600 dark:text-blue-400" />
               <div className="text-left">
@@ -160,13 +160,13 @@ const MyRecordsPage = () => {
               </div>
             </button>
             
-            <button className="flex items-center space-x-3 p-4 bg-purple-50 dark:bg-purple-900/20 hover:bg-purple-100 dark:hover:bg-purple-900/30 rounded-lg transition-colors duration-200">
+            {/* <button className="flex items-center space-x-3 p-4 bg-purple-50 dark:bg-purple-900/20 hover:bg-purple-100 dark:hover:bg-purple-900/30 rounded-lg transition-colors duration-200">
               <FileText className="h-6 w-6 text-purple-600 dark:text-purple-400" />
               <div className="text-left">
                 <div className="font-medium text-purple-700 dark:text-purple-300">Request Records</div>
                 <div className="text-sm text-purple-600 dark:text-purple-400">From other providers</div>
               </div>
-            </button>
+            </button> */}
           </div>
         </div>
       </div>

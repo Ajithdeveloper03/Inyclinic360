@@ -4,7 +4,7 @@ import { useTheme } from '../contexts/ThemeContext';
 import DashboardLayout from '../components/DashboardLayout';
 import StatsCard from '../components/StatsCard';
 import AppointmentCalendar from '../components/AppointmentCalendar';
-import PatientList from '../components/PatientList';
+import PaymentModal from '../components/PaymentModal';
 import { 
   Calendar, 
   Users, 
@@ -31,6 +31,9 @@ const ClinicDashboard = () => {
   const navigate = useNavigate();
   const [selectedView, setSelectedView] = useState('overview');
   const [showEmergencyModal, setShowEmergencyModal] = useState(false);
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [selectedPayment, setSelectedPayment] = useState<any>(null);
+  const [showQuickStatsModal, setShowQuickStatsModal] = useState(false);
 
   const stats = [
     {
@@ -81,6 +84,21 @@ const ClinicDashboard = () => {
     { id: 3, type: 'info', title: 'System Update', message: 'New features available', time: '1 hour ago' }
   ];
 
+  const pendingPayments = [
+    { id: 1, patient: 'John Smith', amount: 150, service: 'Cardiology Consultation', dueDate: '2024-12-20' },
+    { id: 2, patient: 'Sarah Wilson', amount: 75, service: 'Lab Tests', dueDate: '2024-12-22' },
+    { id: 3, patient: 'Michael Davis', amount: 200, service: 'Orthopedic Treatment', dueDate: '2024-12-25' }
+  ];
+
+  const todayStats = {
+    totalRevenue: 12450,
+    patientsServed: 24,
+    appointmentsCompleted: 18,
+    pendingTasks: 5,
+    staffOnDuty: 12,
+    emergencyCases: 2
+  };
+
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'confirmed': return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200';
@@ -100,6 +118,17 @@ const ClinicDashboard = () => {
     setShowEmergencyModal(true);
   };
 
+  const handlePaymentRequest = (payment: any) => {
+    setSelectedPayment(payment);
+    setShowPaymentModal(true);
+  };
+
+  const handlePaymentSuccess = (paymentId: string) => {
+    toast.success('Payment processed successfully!');
+    setShowPaymentModal(false);
+    setSelectedPayment(null);
+  };
+
   const handleQuickAction = (action: string) => {
     switch (action) {
       case 'checkin':
@@ -113,6 +142,12 @@ const ClinicDashboard = () => {
         break;
       case 'emergency':
         navigate('/emergency');
+        break;
+      case 'analytics':
+        setShowQuickStatsModal(true);
+        break;
+      case 'telemedicine':
+        navigate('/telemedicine');
         break;
       default:
         toast.info(`${action} feature activated`);
@@ -182,16 +217,54 @@ const ClinicDashboard = () => {
               <AlertCircle className="h-4 w-4" />
               <span>Emergency Slot</span>
             </button>
+            <Link
+              to="/login?role=clinic"
+              className="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg font-medium transition-colors duration-200 flex items-center space-x-2"
+            >
+              <span>Switch Account</span>
+            </Link>
           </div>
         </div>
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {stats.map((stat, index) => (
-            <div key={index} onClick={() => handleViewAll('analytics')} className="cursor-pointer">
+            <div key={index} onClick={() => handleQuickAction('analytics')} className="cursor-pointer">
               <StatsCard {...stat} />
             </div>
           ))}
+        </div>
+
+        {/* Quick Actions Bar */}
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-4">
+          <div className="flex items-center justify-between">
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+              Quick Actions
+            </h3>
+            <div className="flex items-center space-x-2">
+              <button 
+                onClick={() => handleQuickAction('checkin')}
+                className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-lg text-sm font-medium transition-colors duration-200 flex items-center space-x-1"
+              >
+                <UserCheck className="h-4 w-4" />
+                <span>Check-in</span>
+              </button>
+              <button 
+                onClick={() => handleQuickAction('telemedicine')}
+                className="bg-purple-600 hover:bg-purple-700 text-white px-3 py-2 rounded-lg text-sm font-medium transition-colors duration-200 flex items-center space-x-1"
+              >
+                <Video className="h-4 w-4" />
+                <span>Start Call</span>
+              </button>
+              <button 
+                onClick={() => handleViewAll('analytics')}
+                className="bg-green-600 hover:bg-green-700 text-white px-3 py-2 rounded-lg text-sm font-medium transition-colors duration-200 flex items-center space-x-1"
+              >
+                <BarChart3 className="h-4 w-4" />
+                <span>Analytics</span>
+              </button>
+            </div>
+          </div>
         </div>
 
         {/* Main Content Grid */}
@@ -389,6 +462,46 @@ const ClinicDashboard = () => {
                 </button>
               </div>
             </div>
+
+            {/* Pending Payments */}
+            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                  Pending Payments
+                </h3>
+                <button 
+                  onClick={() => navigate('/payments')}
+                  className="text-blue-600 hover:text-blue-500 dark:text-blue-400 text-sm font-medium"
+                >
+                  View All
+                </button>
+              </div>
+              <div className="space-y-3">
+                {pendingPayments.slice(0, 3).map((payment) => (
+                  <div key={payment.id} className="flex items-center justify-between p-3 bg-orange-50 dark:bg-orange-900/20 rounded-lg">
+                    <div>
+                      <p className="text-sm font-medium text-gray-900 dark:text-white">
+                        {payment.patient}
+                      </p>
+                      <p className="text-xs text-gray-600 dark:text-gray-400">
+                        {payment.service}
+                      </p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-sm font-bold text-gray-900 dark:text-white">
+                        ${payment.amount}
+                      </p>
+                      <button 
+                        onClick={() => handlePaymentRequest(payment)}
+                        className="text-xs text-blue-600 hover:text-blue-500 dark:text-blue-400"
+                      >
+                        Request Payment
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
 
@@ -458,6 +571,85 @@ const ClinicDashboard = () => {
             </div>
           </div>
         )}
+
+        {/* Quick Stats Modal */}
+        {showQuickStatsModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 w-full max-w-2xl mx-4">
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                  Today's Performance Overview
+                </h3>
+                <button
+                  onClick={() => setShowQuickStatsModal(false)}
+                  className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                >
+                  ×
+                </button>
+              </div>
+              
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                <div className="text-center p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                  <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">
+                    ${todayStats.totalRevenue.toLocaleString()}
+                  </p>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">Total Revenue</p>
+                </div>
+                <div className="text-center p-4 bg-green-50 dark:bg-green-900/20 rounded-lg">
+                  <p className="text-2xl font-bold text-green-600 dark:text-green-400">
+                    {todayStats.patientsServed}
+                  </p>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">Patients Served</p>
+                </div>
+                <div className="text-center p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
+                  <p className="text-2xl font-bold text-purple-600 dark:text-purple-400">
+                    {todayStats.appointmentsCompleted}
+                  </p>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">Appointments</p>
+                </div>
+                <div className="text-center p-4 bg-orange-50 dark:bg-orange-900/20 rounded-lg">
+                  <p className="text-2xl font-bold text-orange-600 dark:text-orange-400">
+                    {todayStats.pendingTasks}
+                  </p>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">Pending Tasks</p>
+                </div>
+                <div className="text-center p-4 bg-indigo-50 dark:bg-indigo-900/20 rounded-lg">
+                  <p className="text-2xl font-bold text-indigo-600 dark:text-indigo-400">
+                    {todayStats.staffOnDuty}
+                  </p>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">Staff on Duty</p>
+                </div>
+                <div className="text-center p-4 bg-red-50 dark:bg-red-900/20 rounded-lg">
+                  <p className="text-2xl font-bold text-red-600 dark:text-red-400">
+                    {todayStats.emergencyCases}
+                  </p>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">Emergency Cases</p>
+                </div>
+              </div>
+              
+              <div className="flex justify-end mt-6">
+                <button
+                  onClick={() => {
+                    setShowQuickStatsModal(false);
+                    navigate('/analytics');
+                  }}
+                  className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors duration-200"
+                >
+                  View Detailed Analytics
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Payment Modal */}
+        <PaymentModal
+          isOpen={showPaymentModal}
+          onClose={() => setShowPaymentModal(false)}
+          amount={selectedPayment?.amount || 0}
+          description={selectedPayment?.service || ''}
+          onSuccess={handlePaymentSuccess}
+        />
       </div>
     </DashboardLayout>
   );
