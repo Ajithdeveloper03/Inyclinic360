@@ -15,43 +15,43 @@ const HealthTrackingPage = () => {
   ];
 
   const bloodPressureData = [
-    { date: '2024-12-01', systolic: 120, diastolic: 80 },
-    { date: '2024-12-03', systolic: 125, diastolic: 82 },
-    { date: '2024-12-05', systolic: 118, diastolic: 78 },
-    { date: '2024-12-07', systolic: 122, diastolic: 81 },
-    { date: '2024-12-09', systolic: 119, diastolic: 79 },
-    { date: '2024-12-11', systolic: 121, diastolic: 80 },
-    { date: '2024-12-13', systolic: 117, diastolic: 77 }
+    { date: '2025-12-01', systolic: 120, diastolic: 80 },
+    { date: '2025-12-03', systolic: 125, diastolic: 82 },
+    { date: '2025-12-05', systolic: 118, diastolic: 78 },
+    { date: '2025-12-07', systolic: 122, diastolic: 81 },
+    { date: '2025-12-09', systolic: 119, diastolic: 79 },
+    { date: '2025-12-11', systolic: 121, diastolic: 80 },
+    { date: '2025-12-13', systolic: 117, diastolic: 77 }
   ];
 
   const heartRateData = [
-    { date: '2024-12-01', value: 72 },
-    { date: '2024-12-03', value: 75 },
-    { date: '2024-12-05', value: 68 },
-    { date: '2024-12-07', value: 71 },
-    { date: '2024-12-09', value: 69 },
-    { date: '2024-12-11', value: 73 },
-    { date: '2024-12-13', value: 70 }
+    { date: '2025-12-01', value: 72 },
+    { date: '2025-12-03', value: 75 },
+    { date: '2025-12-05', value: 68 },
+    { date: '2025-12-07', value: 71 },
+    { date: '2025-12-09', value: 69 },
+    { date: '2025-12-11', value: 73 },
+    { date: '2025-12-13', value: 70 }
   ];
 
   const weightData = [
-    { date: '2024-12-01', value: 175 },
-    { date: '2024-12-03', value: 174.5 },
-    { date: '2024-12-05', value: 174.2 },
-    { date: '2024-12-07', value: 173.8 },
-    { date: '2024-12-09', value: 173.5 },
-    { date: '2024-12-11', value: 173.2 },
-    { date: '2024-12-13', value: 172.8 }
+    { date: '2025-12-01', value: 75 },
+    { date: '2025-12-03', value: 74.5 },
+    { date: '2025-12-05', value: 70.2 },
+    { date: '2025-12-07', value: 69.8 },
+    { date: '2025-12-09', value: 67.5 },
+    { date: '2025-12-11', value: 67.2 },
+    { date: '2025-12-13', value: 65.8 }
   ];
 
   const temperatureData = [
-    { date: '2024-12-01', value: 98.6 },
-    { date: '2024-12-03', value: 98.4 },
-    { date: '2024-12-05', value: 98.7 },
-    { date: '2024-12-07', value: 98.5 },
-    { date: '2024-12-09', value: 98.6 },
-    { date: '2024-12-11', value: 98.3 },
-    { date: '2024-12-13', value: 98.5 }
+    { date: '2025-12-01', value: 98.6 },
+    { date: '2025-12-03', value: 98.4 },
+    { date: '2025-12-05', value: 98.7 },
+    { date: '2025-12-07', value: 98.5 },
+    { date: '2025-12-09', value: 98.6 },
+    { date: '2025-12-11', value: 98.3 },
+    { date: '2025-12-13', value: 98.5 }
   ];
 
   const getDataForMetric = (metric: string) => {
@@ -238,7 +238,7 @@ const HealthTrackingPage = () => {
         </div>
 
         {/* Health Goals */}
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6">
+        {/* <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
               Health Goals
@@ -281,7 +281,7 @@ const HealthTrackingPage = () => {
               </div>
             ))}
           </div>
-        </div>
+        </div> */}
 
         {/* Recent Readings */}
         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6">
@@ -301,7 +301,7 @@ const HealthTrackingPage = () => {
               </thead>
               <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
                 <tr>
-                  <td className="py-3 text-sm text-gray-900 dark:text-white">Dec 13, 2024</td>
+                  <td className="py-3 text-sm text-gray-900 dark:text-white">Dec 13, 2025</td>
                   <td className="py-3 text-sm text-gray-900 dark:text-white">Blood Pressure</td>
                   <td className="py-3 text-sm text-gray-900 dark:text-white">117/77 mmHg</td>
                   <td className="py-3">
@@ -311,7 +311,7 @@ const HealthTrackingPage = () => {
                   </td>
                 </tr>
                 <tr>
-                  <td className="py-3 text-sm text-gray-900 dark:text-white">Dec 13, 2024</td>
+                  <td className="py-3 text-sm text-gray-900 dark:text-white">Dec 13, 2025</td>
                   <td className="py-3 text-sm text-gray-900 dark:text-white">Heart Rate</td>
                   <td className="py-3 text-sm text-gray-900 dark:text-white">70 bpm</td>
                   <td className="py-3">
@@ -321,7 +321,7 @@ const HealthTrackingPage = () => {
                   </td>
                 </tr>
                 <tr>
-                  <td className="py-3 text-sm text-gray-900 dark:text-white">Dec 13, 2024</td>
+                  <td className="py-3 text-sm text-gray-900 dark:text-white">Dec 13, 2025</td>
                   <td className="py-3 text-sm text-gray-900 dark:text-white">Weight</td>
                   <td className="py-3 text-sm text-gray-900 dark:text-white">172.8 lbs</td>
                   <td className="py-3">

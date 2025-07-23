@@ -9,7 +9,7 @@ const SettingsPage = () => {
     { id: 'profile', name: 'Profile', icon: User },
     { id: 'notifications', name: 'Notifications', icon: Bell },
     { id: 'security', name: 'Security', icon: Shield },
-    { id: 'system', name: 'System', icon: Database },
+    // { id: 'system', name: 'System', icon: Database },
     { id: 'appearance', name: 'Appearance', icon: Palette }
   ];
 
@@ -96,7 +96,7 @@ const SettingsPage = () => {
                       <input
                         type="tel"
                         className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                        defaultValue="+1 (555) 123-4567"
+                        defaultValue="+91 123-4567"
                       />
                     </div>
                   </div>
@@ -143,7 +143,7 @@ const SettingsPage = () => {
                     <div className="flex items-center justify-between">
                       <div>
                         <h3 className="text-sm font-medium text-gray-900 dark:text-white">
-                          Appointment Reminders
+                          Whatsapp Reminders
                         </h3>
                         <p className="text-sm text-gray-600 dark:text-gray-400">
                           Get reminded about upcoming appointments
@@ -199,7 +199,7 @@ const SettingsPage = () => {
                 </div>
               )}
 
-              {selectedTab === 'system' && (
+              {/* {selectedTab === 'system' && (
                 <div className="space-y-6">
                   <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
                     System Settings
@@ -211,7 +211,7 @@ const SettingsPage = () => {
                     </p>
                   </div>
                 </div>
-              )}
+              )} */}
 
               {selectedTab === 'appearance' && (
                 <div className="space-y-6">

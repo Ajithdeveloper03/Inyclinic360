@@ -11,16 +11,16 @@ const EmergencyPage = () => {
   ]);
 
   const emergencyContacts = [
-    { name: 'Emergency Services', number: '911', type: 'primary' },
-    { name: 'Poison Control', number: '1-800-222-1222', type: 'specialized' },
-    { name: 'Crisis Hotline', number: '988', type: 'mental' },
-    { name: 'Hospital Security', number: '(555) 123-4567', type: 'internal' }
+    { name: 'Ambulance', number: '108', type: 'primary' },
+    { name: 'Police', number: '100', type: 'specialized' },
+    // { name: 'Crisis Hotline', number: '988', type: 'mental' },
+    { name: 'Hospital Security', number: '123-4567', type: 'internal' }
   ];
 
   const emergencyProtocols = [
     { id: 1, title: 'Cardiac Arrest Protocol', steps: 5, lastUpdated: '2024-01-15' },
     { id: 2, title: 'Stroke Response Protocol', steps: 7, lastUpdated: '2024-01-10' },
-    { id: 3, title: 'Trauma Assessment Protocol', steps: 6, lastUpdated: '2024-01-08' },
+    // { id: 3, title: 'Trauma Assessment Protocol', steps: 6, lastUpdated: '2024-01-08' },
     { id: 4, title: 'Allergic Reaction Protocol', steps: 4, lastUpdated: '2024-01-05' }
   ];
 
@@ -65,17 +65,17 @@ const EmergencyPage = () => {
               <span>Emergency Alert</span>
             </button>
             <button
-              onClick={() => handleEmergencyCall('911')}
+              onClick={() => handleEmergencyCall('108')}
               className="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-lg font-medium transition-colors duration-200 flex items-center space-x-2"
             >
               <Phone className="h-4 w-4" />
-              <span>Call 911</span>
+              <span>Call 108</span>
             </button>
           </div>
         </div>
 
         {/* Emergency Status Dashboard */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6">
             <div className="flex items-center justify-between">
               <div>
@@ -89,7 +89,7 @@ const EmergencyPage = () => {
             <p className="text-sm text-red-600 dark:text-red-400 mt-2">Immediate attention required</p>
           </div>
 
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6">
+          {/* <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600 dark:text-gray-400">Response Time</p>
@@ -100,7 +100,7 @@ const EmergencyPage = () => {
               </div>
             </div>
             <p className="text-sm text-green-600 dark:text-green-400 mt-2">-0.8 min from target</p>
-          </div>
+          </div> */}
 
           <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6">
             <div className="flex items-center justify-between">
@@ -177,9 +177,9 @@ const EmergencyPage = () => {
                       <div><strong>HR:</strong> {emergency.vitals.hr}</div>
                       <div><strong>Temp:</strong> {emergency.vitals.temp}</div>
                     </div>
-                    <button className="mt-2 bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded text-sm transition-colors duration-200">
+                    {/* <button className="mt-2 bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded text-sm transition-colors duration-200">
                       Respond
-                    </button>
+                    </button> */}
                   </div>
                 </div>
               </div>
@@ -264,18 +264,18 @@ const EmergencyPage = () => {
             </div>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <button
               onClick={handleEmergencyAlert}
               className="bg-red-600 hover:bg-red-700 text-white p-4 rounded-lg font-medium transition-colors duration-200 flex items-center justify-center space-x-2"
             >
               <AlertTriangle className="h-5 w-5" />
-              <span>Code Red Alert</span>
+              <span>Red Alert</span>
             </button>
-            <button className="bg-orange-600 hover:bg-orange-700 text-white p-4 rounded-lg font-medium transition-colors duration-200 flex items-center justify-center space-x-2">
+            {/* <button className="bg-orange-600 hover:bg-orange-700 text-white p-4 rounded-lg font-medium transition-colors duration-200 flex items-center justify-center space-x-2">
               <Zap className="h-5 w-5" />
               <span>Mass Casualty</span>
-            </button>
+            </button> */}
             <button className="bg-purple-600 hover:bg-purple-700 text-white p-4 rounded-lg font-medium transition-colors duration-200 flex items-center justify-center space-x-2">
               <Activity className="h-5 w-5" />
               <span>All Clear</span>

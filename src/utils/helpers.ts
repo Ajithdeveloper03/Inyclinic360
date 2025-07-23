@@ -9,6 +9,15 @@ export const formatDate = (date: string | Date) => {
   
   return format(dateObj, 'MMM dd, yyyy');
 };
+export const getEstimatedStartTime = (estimatedWaitTime: number): string => {
+  const now = new Date();
+  now.setMinutes(now.getMinutes() + estimatedWaitTime);
+  return now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+};
+
+export const randomBetween = (min: number, max: number) => {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+};
 
 export const formatTime = (time: string) => {
   return format(parseISO(`2000-01-01T${time}`), 'h:mm a');

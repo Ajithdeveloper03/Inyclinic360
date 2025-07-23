@@ -77,7 +77,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
     { name: 'Payments', icon: CreditCard, href: '/payments' },
     { name: 'Health Assistant', icon: MessageCircle, href: '/my-appointments' },
     { name: 'Telemedicine', icon: Video, href: '/my-appointments' },
-    { name: 'Health Tracking', icon: Activity, href: '/my-appointments' },
+    { name: 'Health Tracking', icon: Activity, href: '/health-tracking' },
     
     { name: 'Emergency', icon: Phone, href: '/my-appointments' },
     { name: 'Settings', icon: Settings, href: '/my-appointments' }
@@ -234,7 +234,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
               {/* <NotificationCenter />
                */}
               <button
-                // onClick={() => handleQuickAction('emergency')}
+                onClick={() => handleQuickAction('patient-dashboard')}
                 className="p-2 text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-200 hover:bg-red-100 dark:hover:bg-red-900/20 rounded-lg transition-colors duration-200"
                 title="Emergency"
               >
