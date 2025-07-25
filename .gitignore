@@ -1,7 +1,4 @@
-Inyclinic(25.7.25).zip
-backup(16.7.25).zip
-Inyclinic(15-7-25).zip
-project-bolt-sb1-qng9ejej.zip
+
 # Logs
 logs
 *.log
@@ -13,7 +10,7 @@ lerna-debug.log*
 
 node_modules
 dist
-.zip
+*.zip
 dist-ssr
 *.local
 
