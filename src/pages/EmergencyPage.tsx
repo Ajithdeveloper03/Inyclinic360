@@ -188,7 +188,7 @@ const EmergencyPage = () => {
         </div>
 
         {/* Emergency Contacts & Protocols */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-1 gap-6">
           {/* Emergency Contacts */}
           <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6">
             <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">
@@ -221,7 +221,7 @@ const EmergencyPage = () => {
           </div>
 
           {/* Emergency Protocols */}
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6">
+          {/* <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6">
             <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">
               Emergency Protocols
             </h2>
@@ -245,7 +245,7 @@ const EmergencyPage = () => {
                 </div>
               ))}
             </div>
-          </div>
+          </div> */}
         </div>
 
         {/* Emergency Alert System */}

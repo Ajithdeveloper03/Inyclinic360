@@ -79,8 +79,8 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
     { name: 'Telemedicine', icon: Video, href: '/my-appointments' },
     { name: 'Health Tracking', icon: Activity, href: '/health-tracking' },
     
-    { name: 'Emergency', icon: Phone, href: '/my-appointments' },
-    { name: 'Settings', icon: Settings, href: '/my-appointments' }
+    { name: 'Emergency', icon: Phone, href: '/emergency-contact' },
+    { name: 'Settings', icon: Settings, href: '/patient-settings' }
   ];
 
   const menuItems = isClinicUser ? clinicMenuItems : patientMenuItems;
@@ -155,7 +155,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
         <div className="absolute bottom-0 left-0 right-0 p-6 border-t border-gray-200 dark:border-gray-700">
           <div className="flex items-center space-x-3 mb-4">
             <img
-              src={user?.avatar || `https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=40&h=40&fit=crop&crop=face`}
+              src={user?.avatar || `https://images.pexels.com/photos/8721204/pexels-photo-8721204.jpeg`}
               alt={user?.name}
               className="w-10 h-10 rounded-full object-cover"
             />
@@ -234,7 +234,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
               {/* <NotificationCenter />
                */}
               <button
-                onClick={() => handleQuickAction('patient-dashboard')}
+                onClick={() => handleQuickAction('emergency')}
                 className="p-2 text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-200 hover:bg-red-100 dark:hover:bg-red-900/20 rounded-lg transition-colors duration-200"
                 title="Emergency"
               >
@@ -243,7 +243,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
               
               <div className="flex items-center space-x-2">
                 <img
-                  src={user?.avatar || `https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=32&h=32&fit=crop&crop=face`}
+                  src={user?.avatar || `https://images.pexels.com/photos/8721204/pexels-photo-8721204.jpeg`}
                   alt={user?.name}
                   className="w-8 h-8 rounded-full object-cover"
                 />

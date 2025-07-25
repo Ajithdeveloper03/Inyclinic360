@@ -188,7 +188,7 @@ const MyAppointmentsPage = () => {
         })
       );
       setLastUpdate(new Date());
-    }, 5000);
+    }, 15000);
 
     return () => clearInterval(interval);
   }, []);
