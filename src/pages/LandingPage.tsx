@@ -15,7 +15,7 @@ import records from '../assets/records.png';
 import reminders from '../assets/reminders.png';
 import schedules from '../assets/schedules.png';
 import toast from 'react-hot-toast';
-import Logo from '../assets/logo2.png';
+import Logo from '../assets/logo.png';
 import choose from '../assets/why-chhose.png';
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";

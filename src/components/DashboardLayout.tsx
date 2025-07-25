@@ -120,7 +120,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
           <div className="flex items-center">
             <img src={Logo} className='h-10'/>
             <span className="ml-2 text-xl font-bold text-gray-900 dark:text-white">
-              Inyclinic 360
+              Inyclinic 360°
             </span>
           </div>
           <button
