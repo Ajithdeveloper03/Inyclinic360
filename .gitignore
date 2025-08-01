@@ -17,6 +17,7 @@ dist-ssr
 Backup(01.08.25)
 Inyclinic(25.7.25)
 .vscode/*
+*.zip
 !.vscode/extensions.json
 .idea
 *.zip
