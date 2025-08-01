@@ -58,6 +58,7 @@ const PatientDashboard = () => {
   const [showMedicationModal, setShowMedicationModal] = useState(false);
   const [showSymptomTracker, setShowSymptomTracker] = useState(false);
   const [lastUpdate, setLastUpdate] = useState(new Date());
+  const [activeStat, setActiveStat] = useState('book-appointment');
 
   const stats = [
     {
@@ -66,7 +67,7 @@ const PatientDashboard = () => {
       change: "",
       changeType: "neutral" as const,
       icon: Booking,
-      color: "teal",
+      color: "#4273d9",
     },
     {
       title: "My Appointments",
@@ -74,7 +75,7 @@ const PatientDashboard = () => {
       change: "",
       changeType: "neutral" as const,
       icon: Man,
-      color: "indigo",
+      color: "#f5f6fa",
     },
     {
       title: "Medical Records",
@@ -82,7 +83,7 @@ const PatientDashboard = () => {
       change: "",
       changeType: "neutral" as const,
       icon: Medical,
-      color: "purple",
+      color: "#f5f6fa",
     },
     {
       title: "My Doctors",
@@ -90,7 +91,7 @@ const PatientDashboard = () => {
       change: "",
       changeType: "neutral" as const,
       icon: Doctor,
-      color: "yellow",
+      color: "#f5f6fa",
     },
   ];
 
@@ -264,6 +265,7 @@ const PatientDashboard = () => {
   };
 
   const handleQuickAction = (action: string) => {
+    setActiveStat(action);
     switch (action) {
       case 'book-appointment':
         navigate('/book-appointment');
@@ -370,7 +372,7 @@ const PatientDashboard = () => {
           <div className="flex space-x-4">
             <button
               onClick={() => navigate('/book-appointment')}
-              className="bg-teal-600 hover:bg-teal-700 text-white px-4 py-2 rounded-lg font-semibold flex items-center space-x-2 shadow-md transition-colors"
+              className="bg-[#4273d9] text-white px-4 py-2 rounded-lg font-semibold flex items-center space-x-2 shadow-md transition-colors"
             >
               <Calendar className="h-5 w-5" />
               <span>Book Appointment</span>
@@ -390,7 +392,10 @@ const PatientDashboard = () => {
             <button
               key={index}
               onClick={() => handleQuickAction(stat.title.toLowerCase().replace(' ', '-'))}
-              className={`bg-${stat.color}-600 text-white p-5 rounded-lg flex flex-col items-center justify-center h-39 shadow-lg hover:bg-${stat.color}-700 transition-colors`}
+              className={`p-5 rounded-lg flex flex-col items-center justify-center h-39 shadow-lg transition-colors
+                ${stat.color === '#f5f6fa' ? 'bg-[#f5f6fa] text-black' : 'bg-[#4273d9] text-white'}
+                hover:bg-[#4273d9] hover:text-white
+                ${activeStat === stat.title.toLowerCase().replace(' ', '-') ? 'bg-[#4273d9] text-white' : ''}`}
             >
               <img src={stat.icon} className="h-20 w-20 mb-2" />
               <span className="text-lg font-medium">{stat.title}</span>
@@ -403,7 +408,6 @@ const PatientDashboard = () => {
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-xl font-semibold text-gray-900">My Appointments</h2>
               <div className="flex items-center space-x-4">
-                {/* <span className="text-sm text-gray-500">Last updated: {lastUpdate.toLocaleTimeString()}</span> */}
                 <button
                   onClick={() => handleViewAll('appointments')}
                   className="text-indigo-600 hover:text-indigo-500 text-sm font-medium"

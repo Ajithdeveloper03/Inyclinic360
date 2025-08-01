@@ -200,7 +200,7 @@ const AppointmentBookingModal = () => {
       return;
     }
 
-    if ((selectedDoctorData?.fee || 0) + PLATFORM_FEE > 0) {
+    if (PLATFORM_FEE > 0) {
       setShowPayment(true);
     } else {
       const appointment = {
@@ -210,7 +210,7 @@ const AppointmentBookingModal = () => {
         date: formData.date,
         time: formData.time,
         type: formData.type,
-        fee: (selectedDoctorData?.fee || 0) + PLATFORM_FEE,
+        fee: PLATFORM_FEE,
         status: 'scheduled',
         paymentStatus: 'paid',
         tags: formData.tags,
@@ -227,7 +227,7 @@ const AppointmentBookingModal = () => {
       date: formData.date,
       time: formData.time,
       type: formData.type,
-      fee: (selectedDoctorData?.fee || 0) + PLATFORM_FEE,
+      fee: PLATFORM_FEE,
       status: 'scheduled',
       paymentStatus: 'paid',
       paymentId,
@@ -448,7 +448,6 @@ const AppointmentBookingModal = () => {
                           <div className="flex items-center space-x-2 mt-1">
                             <span className="text-xs text-yellow-600">★ {doctor.rating}</span>
                             <span className="text-xs text-indigo-500">{doctor.experience}</span>
-                            <span className="text-xs font-medium text-green-600">₹{doctor.fee}</span>
                           </div>
                         </div>
                       </div>
@@ -571,8 +570,7 @@ const AppointmentBookingModal = () => {
                     <div className="flex items-center space-x-3">
                       <CreditCard className="h-5 w-5 text-indigo-600" />
                       <div>
-                        <p className="font-medium text-indigo-900">₹{(selectedDoctorData.fee + PLATFORM_FEE)}</p>
-                        <p className="text-sm text-indigo-600">Consultation Fee: ₹{selectedDoctorData.fee}</p>
+                        <p className="font-medium text-indigo-900">₹{PLATFORM_FEE}</p>
                         <p className="text-sm text-indigo-600">Platform Fee: ₹{PLATFORM_FEE}</p>
                       </div>
                     </div>
@@ -610,7 +608,7 @@ const AppointmentBookingModal = () => {
             {step === 4 ? (
               <>
                 <CreditCard className="h-4 w-4" />
-                <span>Book & Pay ₹{(selectedDoctorData?.fee || 0) + PLATFORM_FEE}</span>
+                <span>Book & Pay ₹{PLATFORM_FEE}</span>
               </>
             ) : (
               <>
@@ -625,7 +623,7 @@ const AppointmentBookingModal = () => {
           <PaymentModal
             isOpen={showPayment}
             onClose={() => setShowPayment(false)}
-            amount={(selectedDoctorData.fee + PLATFORM_FEE)}
+            amount={PLATFORM_FEE}
             description={`${formData.type} with ${selectedDoctorData.name} (incl. ₹${PLATFORM_FEE} platform fee)`}
             appointmentData={{
               doctor: selectedDoctorData.name,
