@@ -129,6 +129,7 @@ const EmergencyPage = () => {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-1 gap-4 mt-6">
+        
         <div className="bg-white rounded-2xl shadow-lg p-4 md:p-6">
           <h2 className="text-lg md:text-xl font-semibold text-gray-900 mb-4">Emergency Contacts</h2>
           <div className="space-y-2">
