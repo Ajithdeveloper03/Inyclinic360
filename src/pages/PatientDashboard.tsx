@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
-import DashboardLayout from '../components/DashboardLayout';
 import StatsCard from '../components/StatsCard';
 import PaymentModal from '../components/PaymentModal';
 import AppointmentProgressBar from '../components/AppointmentProgressBar';
@@ -18,6 +17,7 @@ import {
   Phone, 
   Plus, 
   Video,
+  User,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 
@@ -57,200 +57,83 @@ const PatientDashboard = () => {
   const [lastUpdate, setLastUpdate] = useState(new Date());
 
   const stats = [
-    {
-      title: "Next Appointment",
-      value: "Dec 15",
-      change: "2 days",
-      changeType: "neutral" as const,
-      icon: Calendar,
-      color: "blue" as const,
-    },
-    {
-      title: "Total Visits",
-      value: "47",
-      change: "+3 this year",
-      changeType: "increase" as const,
-      icon: Clock,
-      color: "green" as const,
-    },
-    {
-      title: "Pending Reports",
-      value: "2",
-      change: "Lab results",
-      changeType: "neutral" as const,
-      icon: FileText,
-      color: "orange" as const,
-    },
+    { title: "Book Appointment", value: "", change: "", changeType: "neutral", icon: Calendar, color: "blue" },
+    { title: "My Appointments", value: "", change: "", changeType: "neutral", icon: Clock, color: "blue" },
+    { title: "Medical Records", value: "", change: "", changeType: "neutral", icon: FileText, color: "blue" },
+    { title: "My Doctors", value: "", change: "", changeType: "neutral", icon: User, color: "blue" },
   ];
 
   const [upcomingAppointments, setUpcomingAppointments] = useState<Appointment[]>([
-    {
-      id: 1,
-      date: "Dec 15, 2024",
-      time: "10:30 AM",
-      doctor: "Dr. Sarah Johnson",
-      department: "Cardiology",
-      status: "confirmed",
-      type: "Follow-up",
-      fee: 150,
-      paid: true,
-      expectedDuration: 30,
-      estimatedWaitTime: 0,
-      queuePosition: 0,
-      elapsedTime: 0,
-    },
-    {
-      id: 2,
-      date: "Dec 20, 2024",
-      time: "2:00 PM",
-      doctor: "Dr. Michael Brown",
-      department: "Orthopedics",
-      status: "confirmed",
-      type: "Consultation",
-      fee: 200,
-      paid: true,
-      expectedDuration: 20,
-      estimatedWaitTime: 0,
-      queuePosition: 0,
-      elapsedTime: 0,
-    },
-    {
-      id: 3,
-      date: "Jan 5, 2025",
-      time: "9:15 AM",
-      doctor: "Dr. Sarah Johnson",
-      department: "Cardiology",
-      status: "scheduled",
-      type: "Check-up",
-      fee: 150,
-      paid: false,
-      expectedDuration: 25,
-      estimatedWaitTime: 60,
-      queuePosition: 3,
-      elapsedTime: 0,
-    },
+    { id: 1, date: "Jul 30, 2025", time: "03:30 PM", doctor: "Dr. Ramesh", department: "General", status: "confirmed", type: "Follow-up", fee: 150, paid: true, expectedDuration: 30, estimatedWaitTime: 0, queuePosition: 0, elapsedTime: 0 },
+    { id: 2, date: "Aug 5, 2025", time: "10:00 AM", doctor: "Dr. Lakshmi", department: "Skin", status: "scheduled", type: "Consultation", fee: 200, paid: false, expectedDuration: 20, estimatedWaitTime: 15, queuePosition: 2, elapsedTime: 0 },
+    { id: 3, date: "Aug 10, 2025", time: "09:15 AM", doctor: "Dr. Shalini", department: "ENT", status: "confirmed", type: "Check-up", fee: 150, paid: true, expectedDuration: 25, estimatedWaitTime: 0, queuePosition: 0, elapsedTime: 0 },
   ]);
 
   const recentVisits = [
-    {
-      id: 1,
-      date: "Nov 28, 2024",
-      doctor: "Dr. Sarah Johnson",
-      department: "Cardiology",
-      type: "Follow-up",
-      status: "completed",
-      amount: 150,
-    },
-    {
-      id: 2,
-      date: "Nov 15, 2024",
-      doctor: "Dr. Michael Brown",
-      department: "Orthopedics",
-      type: "Consultation",
-      status: "completed",
-      amount: 200,
-    },
-    {
-      id: 3,
-      date: "Oct 30, 2024",
-      doctor: "Dr. Sarah Johnson",
-      department: "Cardiology",
-      type: "Check-up",
-      status: "completed",
-      amount: 150,
-    },
+    { id: 1, date: "Jul 15, 2025", doctor: "Dr. Ramesh", department: "General", type: "Follow-up", status: "completed", amount: 150 },
+    { id: 2, date: "Jun 20, 2025", doctor: "Dr. Lakshmi", department: "Skin", type: "Consultation", status: "completed", amount: 200 },
+    { id: 3, date: "Jun 5, 2025", doctor: "Dr. Shalini", department: "ENT", type: "Check-up", status: "completed", amount: 150 },
   ];
 
   const pendingPayments: Payment[] = [
-    {
-      id: 1,
-      description: "Cardiology Consultation",
-      amount: 150,
-      dueDate: "Dec 20, 2024",
-      doctor: "Dr. Sarah Johnson",
-    },
-    {
-      id: 2,
-      description: "Lab Tests",
-      amount: 75,
-      dueDate: "Dec 25, 2024",
-      doctor: "Dr. Michael Brown",
-    },
+    { id: 1, description: "Skin Consultation", amount: 200, dueDate: "Aug 5, 2025", doctor: "Dr. Lakshmi" },
   ];
 
   const healthReminders = [
-    { id: 1, type: 'medication', title: 'Blood Pressure Medication', message: 'Take your medication at 8:00 PM', time: '2 hours' },
-    { id: 2, type: 'exercise', title: 'Daily Exercise', message: 'Complete 30 minutes of cardio', time: 'Today' },
-    { id: 3, type: 'appointment', title: 'Upcoming Checkup', message: 'Cardiology appointment in 2 days', time: '2 days' },
+    { id: 1, type: 'medication', title: 'Blood Pressure Medication', message: 'Take at 8:00 PM', time: '4 hours' },
+    { id: 2, type: 'appointment', title: 'Upcoming Checkup', message: 'General appointment today', time: 'Now' },
   ];
 
   const healthGoals = [
     { id: 1, title: 'Daily Steps', target: 10000, current: 7500, unit: 'steps' },
     { id: 2, title: 'Water Intake', target: 8, current: 6, unit: 'glasses' },
-    { id: 3, title: 'Sleep Hours', target: 8, current: 7.5, unit: 'hours' },
-    { id: 4, title: 'Exercise Minutes', target: 30, current: 25, unit: 'minutes' },
   ];
 
   const medications = [
     { id: 1, name: 'Lisinopril', dosage: '10mg', frequency: 'Once daily', nextDose: '8:00 PM', taken: false },
-    { id: 2, name: 'Metformin', dosage: '500mg', frequency: 'Twice daily', nextDose: '6:00 PM', taken: true },
-    { id: 3, name: 'Vitamin D', dosage: '1000 IU', frequency: 'Once daily', nextDose: 'Tomorrow 9:00 AM', taken: true },
   ];
 
-  // Live tracking updates
   useEffect(() => {
     const interval = setInterval(() => {
       setUpcomingAppointments(prev =>
         prev.map(apt => {
           let newApt = { ...apt };
-          const isToday = apt.date === 'Dec 15, 2024'; // Simulate for specific date
+          const isToday = apt.date === 'Jul 30, 2025';
           if (isToday && ['scheduled', 'confirmed', 'checked_in', 'in_waiting_room', 'with_doctor'].includes(apt.status)) {
             switch (apt.status) {
               case 'in_waiting_room':
                 if (apt.estimatedWaitTime > 0) {
-                  newApt.estimatedWaitTime = Math.max(0, apt.estimatedWaitTime - Math.floor(Math.random() * 3) - 1);
-                  if (newApt.estimatedWaitTime <= 2 && Math.random() > 0.7) {
+                  newApt.estimatedWaitTime = Math.max(0, apt.estimatedWaitTime - 1);
+                  if (newApt.estimatedWaitTime <= 0) {
                     newApt.status = 'with_doctor';
                     newApt.estimatedWaitTime = 0;
                     newApt.queuePosition = 0;
-                    toast.success('You are now with the doctor!');
-                  } else if (newApt.queuePosition > 1) {
-                    newApt.queuePosition = Math.max(1, newApt.queuePosition - 1);
-                    if (newApt.queuePosition === 1) {
-                      toast.success('You are next in line!');
-                    }
                   }
                 }
                 break;
               case 'checked_in':
                 if (Math.random() > 0.8) {
                   newApt.status = 'in_waiting_room';
-                  newApt.estimatedWaitTime = Math.max(5, apt.estimatedWaitTime - 5);
-                  newApt.queuePosition = Math.max(1, apt.queuePosition - 1);
-                  toast.success('You are now in the waiting room!');
-                } else {
-                  newApt.estimatedWaitTime = Math.max(0, apt.estimatedWaitTime - Math.floor(Math.random() * 2));
+                  newApt.estimatedWaitTime = 5;
+                  newApt.queuePosition = 1;
                 }
                 break;
               case 'with_doctor':
                 newApt.elapsedTime = apt.elapsedTime + 1;
-                if (newApt.elapsedTime >= apt.expectedDuration && Math.random() > 0.6) {
+                if (newApt.elapsedTime >= apt.expectedDuration) {
                   newApt.status = 'completed';
                   newApt.estimatedWaitTime = 0;
-                  toast.success('Your appointment is complete!');
                 }
                 break;
               case 'confirmed':
                 if (Math.random() > 0.95) {
                   newApt.status = 'checked_in';
-                  newApt.estimatedWaitTime = Math.max(10, apt.estimatedWaitTime - 10);
-                  toast.success('You have checked in for your appointment!');
+                  newApt.estimatedWaitTime = 10;
                 }
                 break;
               case 'scheduled':
                 if (Math.random() > 0.98) {
                   newApt.status = 'confirmed';
-                  toast.success('Your appointment is confirmed!');
                 }
                 break;
             }
@@ -266,33 +149,33 @@ const PatientDashboard = () => {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'scheduled': return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200';
-      case 'confirmed': return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200';
-      case 'checked_in': return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200';
-      case 'in_waiting_room': return 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200';
-      case 'with_doctor': return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200';
-      case 'completed': return 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200';
-      case 'cancelled': return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200';
-      default: return 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200';
+      case 'scheduled': return 'bg-blue-100 text-blue-800';
+      case 'confirmed': return 'bg-green-100 text-green-800';
+      case 'checked_in': return 'bg-yellow-100 text-yellow-800';
+      case 'in_waiting_room': return 'bg-orange-100 text-orange-800';
+      case 'with_doctor': return 'bg-green-100 text-green-800';
+      case 'completed': return 'bg-gray-100 text-gray-800';
+      case 'cancelled': return 'bg-red-100 text-red-800';
+      default: return 'bg-gray-100 text-gray-800';
     }
   };
 
   const handleQuickAction = (action: string) => {
     switch (action) {
       case 'book-appointment':
+        navigate('/book-appointment');
+        break;
+      case 'my-appointments':
         navigate('/my-appointments');
         break;
       case 'medical-records':
         navigate('/my-records');
         break;
-      case 'payments':
-        navigate('/payments');
+      case 'my-doctors':
+        navigate('/my-doctors');
         break;
       case 'emergency':
         navigate('/emergency-contact');
-        break;
-      case 'health-assistant':
-        navigate('/health-assistant');
         break;
       case 'health-goals':
         setShowHealthGoalsModal(true);
@@ -377,342 +260,117 @@ const PatientDashboard = () => {
   };
 
   return (
-    <DashboardLayout>
-      <div className="space-y-6">
-        {/* Header */}
-        <div className="flex justify-between items-center">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-4 md:p-8">
+      <div className="bg-white/90 backdrop-blur-md rounded-2xl shadow-[inset_10px_10px_20px_#ffffff,inset_-10px_-10px_20px_#e0e8f0] border border-gray-200 p-4 md:p-6">
+        <div className="flex flex-col md:flex-row justify-between items-center mb-4 md:mb-6">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-              Welcome back, {user?.name}
-            </h1>
-            <p className="text-gray-600 dark:text-gray-400">
-              Manage your healthcare journey
-            </p>
+            <h1 className="text-2xl md:text-3xl font-bold text-gray-900">Hello, Priya K!</h1>
+            <p className="text-gray-600 text-sm md:text-base">06:02 PM IST, Jul 30, 2025</p>
           </div>
-          <div className="flex items-center space-x-4">
+          <div className="flex flex-col md:flex-row items-center space-y-2 md:space-y-0 md:space-x-2 mt-2 md:mt-0">
             <button
-              onClick={() => handleQuickAction('book-appointment')}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors duration-200 flex items-center space-x-2"
+              onClick={() => navigate('/book-appointment')}
+              className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 md:px-5 md:py-3 rounded-xl font-semibold flex items-center space-x-1 md:space-x-2 shadow-[5px_5px_15px_#d1d9e6,-5px_-5px_15px_#ffffff] w-full md:w-auto"
             >
-              <Plus className="h-4 w-4" />
-              <span>Book Appointment</span>
+              <Plus className="h-4 w-4 md:h-5 md:w-5" />
+              <span className="text-sm md:text-base">Book Appointment</span>
             </button>
             <button
               onClick={() => handleQuickAction('emergency')}
-              className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-medium transition-colors duration-200 flex items-center space-x-2"
+              className="bg-red-600 hover:bg-red-700 text-white px-3 py-2 md:px-5 md:py-3 rounded-xl font-semibold flex items-center space-x-1 md:space-x-2 shadow-[5px_5px_15px_#d1d9e6,-5px_-5px_15px_#ffffff] w-full md:w-auto"
             >
-              <Phone className="h-4 w-4" />
-              <span>Emergency</span>
+              <Phone className="h-4 w-4 md:h-5 md:w-5" />
+              <span className="text-sm md:text-base">Emergency</span>
             </button>
           </div>
         </div>
 
-        {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
           {stats.map((stat, index) => (
-            <div
+            <button
               key={index}
-              onClick={() => handleViewAll(stat.title === 'Pending Reports' ? 'records' : 'appointments')}
-              className="cursor-pointer transform hover:scale-105 transition-transform duration-200"
+              onClick={() => handleQuickAction(stat.title.toLowerCase().replace(' ', '-'))}
+              className="bg-white/90 backdrop-blur-md p-3 md:p-4 rounded-2xl flex flex-col items-center justify-center h-24 md:h-36 border border-gray-200 shadow-[10px_10px_20px_#e0e8f0,-10px_-10px_20px_#ffffff] hover:shadow-[5px_5px_15px_#babecc,-5px_-5px_15px_#ffffff] transition-shadow duration-300"
             >
-              <StatsCard {...stat} />
-            </div>
+              <stat.icon className="h-6 w-6 md:h-8 md:w-8 mb-2 text-blue-600" />
+              <span className="text-sm md:text-lg font-medium text-gray-800 text-center">{stat.title}</span>
+            </button>
           ))}
         </div>
 
-        {/* Quick Health Actions */}
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-4">
-          <div className="flex items-center justify-between">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-              Health Overview
-            </h3>
-            <div className="flex items-center space-x-2">
-              <button
-                onClick={() => handleQuickAction('medications')}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-lg text-sm font-medium transition-colors duration-200 flex items-center space-x-1"
-              >
-                <Pill className="h-4 w-4" />
-                <span>Medications</span>
-              </button>
-              <button
-                onClick={() => handleQuickAction('symptom-tracker')}
-                className="bg-green-600 hover:bg-green-700 text-white px-3 py-2 rounded-lg text-sm font-medium transition-colors duration-200 flex items-center space-x-1"
-              >
-                <Activity className="h-4 w-4" />
-                <span>Symptoms</span>
-              </button>
-              <button
-                onClick={() => handleQuickAction('health-goals')}
-                className="bg-purple-600 hover:bg-purple-700 text-white px-3 py-2 rounded-lg text-sm font-medium transition-colors duration-200 flex items-center space-x-1"
-              >
-                <Target className="h-4 w-4" />
-                <span>Goals</span>
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {/* Main Content Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Upcoming Appointments */}
-          <div className="lg:col-span-2">
-            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6">
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
-                  Upcoming Appointments
-                </h2>
-                <div className="flex items-center space-x-4">
-                  <span className="text-xs text-gray-500 dark:text-gray-400">
-                    Last updated: {lastUpdate.toLocaleTimeString()}
-                  </span>
-                  <button
-                    onClick={() => handleViewAll('appointments')}
-                    className="text-blue-600 dark:text-blue-400 hover:text-blue-500 text-sm font-medium"
-                  >
-                    View All
-                  </button>
-                </div>
-              </div>
-
-              <div className="space-y-4">
-                {upcomingAppointments.map((appointment) => (
-                  <div
-                    key={appointment.id}
-                    className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors duration-200"
-                  >
-                    <div className="flex items-center space-x-4 flex-1">
-                      <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/20 rounded-lg flex items-center justify-center">
-                        <Calendar className="h-5 w-5 text-blue-600 dark:text-blue-400" />
-                      </div>
-                      <div className="flex-1">
-                        <div className="font-medium text-gray-900 dark:text-white">
-                          {appointment.doctor}
-                        </div>
-                        <div className="text-sm text-gray-600 dark:text-gray-400">
-                          {appointment.department} • {appointment.date} • {appointment.time} • ₹{appointment.fee}
-                          {appointment.paid && <span className="text-green-600 ml-2">• Paid</span>}
-                        </div>
-                        <div className="mt-2 w-48">
-                          <AppointmentProgressBar
-                            status={appointment.status}
-                            queuePosition={appointment.queuePosition}
-                            estimatedWaitTime={appointment.estimatedWaitTime}
-                            expectedDuration={appointment.expectedDuration}
-                            elapsedTime={appointment.elapsedTime}
-                            showDetails={true}
-                          />
-                        </div>
-                      </div>
-                    </div>
-                    <div className="flex items-center space-x-3">
-                      <span className={`px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(appointment.status)}`}>
-                        {appointment.status.replace('_', ' ')}
-                      </span>
-                      <div className="flex items-center space-x-1">
-                        {/* {appointment.status === 'with_doctor' && (
-                          <button
-                            onClick={() => handleAppointmentAction('video-call', appointment)}
-                            className="text-purple-600 hover:text-purple-500 dark:text-purple-400 p-1"
-                            title="Video Call"
-                          >
-                            <Video className="h-4 w-4" />
-                          </button>
-                        )} */}
-                        {/* {!appointment.paid && (
-                          <button
-                            onClick={() => handleAppointmentAction('pay', appointment)}
-                            className="text-green-600 hover:text-green-500 dark:text-green-400 p-1"
-                            title="Pay Now"
-                          >
-                            <CreditCard className="h-4 w-4" />
-                          </button>
-                        )} */}
-                        <button
-                          onClick={() => handleAppointmentAction('reschedule', appointment)}
-                          className="text-blue-600 hover:text-blue-500 dark:text-blue-400 p-1"
-                          title="Reschedule"
-                        >
-                          <Calendar className="h-4 w-4" />
-                        </button>
-                        {/* <button
-                          onClick={() => handleAppointmentAction('cancel', appointment)}
-                          className="text-red-600 hover:text-red-500 dark:text-red-400 p-1"
-                          title="Cancel"
-                        >
-                          <Phone className="h-4 w-4" />
-                        </button> */}
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          {/* Quick Actions & Health Reminders */}
-          <div className="space-y-6">
-            {/* Quick Actions */}
-            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6">
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-                Quick Actions
-              </h3>
-              <div className="space-y-3">
+        <div className="space-y-6">
+          <div className="bg-white/90 backdrop-blur-md rounded-2xl shadow-[inset_10px_10px_20px_#e0e8f0,inset_-10px_-10px_20px_#ffffff] p-4 md:p-6 border border-gray-200">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-4">
+              <h2 className="text-lg md:text-xl font-semibold text-gray-900">My Appointments</h2>
+              <div className="flex flex-col md:flex-row items-start md:items-center space-y-2 md:space-y-0 md:space-x-4 mt-2 md:mt-0">
+                <span className="text-sm text-gray-500">Last updated: {lastUpdate.toLocaleTimeString()}</span>
                 <button
-                  onClick={() => handleQuickAction('book-appointment')}
-                  className="w-full flex items-center space-x-3 p-3 bg-blue-50 dark:bg-blue-900/20 hover:bg-blue-100 dark:hover:bg-blue-900/30 rounded-lg transition-colors duration-200"
+                  onClick={() => handleViewAll('appointments')}
+                  className="text-blue-600 hover:text-blue-500 text-sm font-medium"
                 >
-                  <Calendar className="h-5 w-5 text-blue-600 dark:text-blue-400" />
-                  <span className="text-sm font-medium text-blue-700 dark:text-blue-300">
-                    Book Appointment
-                  </span>
-                </button>
-                <button
-                  onClick={() => handleQuickAction('medical-records')}
-                  className="w-full flex items-center space-x-3 p-3 bg-green-50 dark:bg-green-900/20 hover:bg-green-100 dark:hover:bg-green-900/30 rounded-lg transition-colors duration-200"
-                >
-                  <FileText className="h-5 w-5 text-green-600 dark:text-green-400" />
-                  <span className="text-sm font-medium text-green-700 dark:text-green-300">
-                    Medical Records
-                  </span>
-                </button>
-                <button
-                  onClick={() => handleQuickAction('payments')}
-                  className="w-full flex items-center space-x-3 p-3 bg-purple-50 dark:bg-purple-900/20 hover:bg-purple-100 dark:hover:bg-purple-900/30 rounded-lg transition-colors duration-200"
-                >
-                  <CreditCard className="h-5 w-5 text-purple-600 dark:text-purple-400" />
-                  <span className="text-sm font-medium text-purple-700 dark:text-purple-300">
-                    Payment History
-                  </span>
-                </button>
-                <button
-                  onClick={() => handleQuickAction('emergency')}
-                  className="w-full flex items-center space-x-3 p-3 bg-red-50 dark:bg-red-900/20 hover:bg-red-100 dark:hover:bg-red-900/30 rounded-lg transition-colors duration-200"
-                >
-                  <Phone className="h-5 w-5 text-red-600 dark:text-red-400" />
-                  <span className="text-sm font-medium text-red-700 dark:text-red-300">
-                    Emergency Contact
-                  </span>
-                </button>
-                {/* <button
-                  onClick={() => handleQuickAction('telemedicine')}
-                  className="w-full flex items-center space-x-3 p-3 bg-purple-50 dark:bg-purple-900/20 hover:bg-purple-100 dark:hover:bg-purple-900/30 rounded-lg transition-colors duration-200"
-                >
-                  <Video className="h-5 w-5 text-purple-600 dark:text-purple-400" />
-                  <span className="text-sm font-medium text-purple-700 dark:text-purple-300">
-                    Telemedicine
-                  </span>
-                </button> */}
-                {/* <button
-                  onClick={() => handleQuickAction('insurance')}
-                  className="w-full flex items-center space-x-3 p-3 bg-indigo-50 dark:bg-indigo-900/20 hover:bg-indigo-100 dark:hover:bg-indigo-900/30 rounded-lg transition-colors duration-200"
-                >
-                  <Shield className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
-                  <span className="text-sm font-medium text-indigo-700 dark:text-indigo-300">
-                    Insurance & Benefits
-                  </span>
-                </button> */}
-              </div>
-              <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
-                <button
-                  onClick={() => handleQuickAction('wellness')}
-                  className="w-full flex items-center space-x-3 p-3 bg-gradient-to-r from-green-50 to-blue-50 dark:from-green-900/20 dark:to-blue-900/20 hover:from-green-100 hover:to-blue-100 dark:hover:from-green-900/30 dark:hover:to-blue-900/30 rounded-lg transition-colors duration-200"
-                >
-                  <Heart className="h-5 w-5 text-green-600 dark:text-green-400" />
-                  <span className="text-sm font-medium text-green-700 dark:text-green-300">
-                    Wellness Center
-                  </span>
+                  View All
                 </button>
               </div>
             </div>
-
-            {/* Health Reminders */}
-            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6">
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-                Health Reminders
-              </h3>
-              <div className="space-y-3">
-                {healthReminders.map((reminder) => (
-                  <div key={reminder.id} className="flex items-start space-x-3 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                    <div
-                      className={`w-8 h-8 rounded-lg flex items-center justify-center ${
-                        reminder.type === 'medication'
-                          ? 'bg-blue-100 dark:bg-blue-900/20'
-                          : reminder.type === 'exercise'
-                          ? 'bg-green-100 dark:bg-green-900/20'
-                          : 'bg-purple-100 dark:bg-purple-900/20'
-                      }`}
-                    >
-                      {reminder.type === 'medication' ? (
-                        <Pill className="h-4 w-4 text-blue-600 dark:text-blue-400" />
-                      ) : reminder.type === 'exercise' ? (
-                        <Activity className="h-4 w-4 text-green-600 dark:text-green-400" />
-                      ) : (
-                        <Calendar className="h-4 w-4 text-purple-600 dark:text-purple-400" />
-                      )}
-                    </div>
+            <div className="space-y-3">
+              {upcomingAppointments.map((appointment) => (
+                <div
+                  key={appointment.id}
+                  className="bg-white/80 backdrop-blur-md p-3 md:p-4 rounded-xl border border-gray-200 shadow-[10px_10px_20px_#e0e8f0,-10px_-10px_20px_#ffffff] hover:shadow-[5px_5px_15px_#babecc,-5px_-5px_15px_#ffffff] transition-shadow duration-300"
+                >
+                  <div className="flex flex-col md:flex-row items-start md:items-center justify-between space-x-0 md:space-x-4">
                     <div className="flex-1">
-                      <p className="text-sm font-medium text-gray-900 dark:text-white">
-                        {reminder.title}
-                      </p>
-                      <p className="text-xs text-gray-600 dark:text-gray-400">
-                        {reminder.message}
-                      </p>
-                      <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">
-                        Due in {reminder.time}
-                      </p>
+                      <p className="text-sm md:text-base text-gray-700">Date: <span className="font-medium">{appointment.date}</span></p>
+                      <p className="text-sm md:text-base text-gray-700">Time: <span className="font-medium">{appointment.time}</span></p>
+                      <p className="text-sm md:text-base text-gray-700">Doctor: <span className="font-medium">{appointment.doctor}</span></p>
+                      <p className="text-sm md:text-base text-gray-700">Dept: <span className="font-medium">{appointment.department}</span></p>
+                    </div>
+                    <div className="flex-shrink-0 mt-2 md:mt-0">
+                      <span className={`px-2 py-1 rounded-full text-xs md:text-sm font-semibold ${getStatusColor(appointment.status)}`}>
+                        {appointment.status}
+                      </span>
+                    </div>
+                    <div className="flex-shrink-0 mt-2 md:mt-0 space-x-2">
+                      <button onClick={() => handleAppointmentAction('view', appointment)} className="text-blue-600 hover:text-blue-500 text-sm font-medium hover:underline">View</button>
+                      {appointment.status === 'confirmed' && <button onClick={() => handleAppointmentAction('cancel', appointment)} className="text-red-600 hover:text-red-500 text-sm font-medium hover:underline">Cancel</button>}
                     </div>
                   </div>
-                ))}
-              </div>
+                </div>
+              ))}
             </div>
+          </div>
+
+          <div className="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4">
+            <button onClick={() => handleQuickAction('payments')} className="bg-white/90 backdrop-blur-md p-3 md:p-4 rounded-2xl flex items-center border border-gray-200 shadow-[10px_10px_20px_#e0e8f0,-10px_-10px_20px_#ffffff] hover:shadow-[5px_5px_15px_#babecc,-5px_-5px_15px_#ffffff] w-full md:w-1/2">
+              <CreditCard className="h-5 w-5 mr-2 md:mr-3 text-gray-700" /> <span className="text-lg font-medium text-gray-800">Billing</span>
+            </button>
+            <button onClick={() => handleQuickAction('profile-settings')} className="bg-white/90 backdrop-blur-md p-3 md:p-4 rounded-2xl flex items-center border border-gray-200 shadow-[10px_10px_20px_#e0e8f0,-10px_-10px_20px_#ffffff] hover:shadow-[5px_5px_15px_#babecc,-5px_-5px_15px_#ffffff] w-full md:w-1/2">
+              <Shield className="h-5 w-5 mr-2 md:mr-3 text-gray-700" /> <span className="text-lg font-medium text-gray-800">Profile / Settings</span>
+            </button>
           </div>
         </div>
 
-        {/* Health Goals Modal */}
         {showHealthGoalsModal && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 w-full max-w-md mx-4">
-              <div className="flex items-center justify-between mb-6">
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                  Today's Health Goals
-                </h3>
-                <button
-                  onClick={() => setShowHealthGoalsModal(false)}
-                  className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
-                >
-                  ×
-                </button>
+            <div className="bg-white/90 backdrop-blur-md rounded-2xl p-4 md:p-6 w-full max-w-xs md:max-w-md mx-2 md:mx-4 border border-gray-200 shadow-[10px_10px_20px_#e0e8f0,-10px_-10px_20px_#ffffff]">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold text-gray-900">Today's Health Goals</h3>
+                <button onClick={() => setShowHealthGoalsModal(false)} className="text-gray-400 hover:text-gray-600">×</button>
               </div>
-              <div className="space-y-4">
+              <div className="space-y-2">
                 {healthGoals.map((goal) => (
-                  <div key={goal.id} className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                    <div className="flex items-center justify-between mb-2">
-                      <h4 className="font-medium text-gray-900 dark:text-white">
-                        {goal.title}
-                      </h4>
-                      <span className="text-sm text-gray-600 dark:text-gray-400">
-                        {goal.target} {goal.unit}
-                      </span>
+                  <div key={goal.id} className="p-2 md:p-3 bg-gray-50/70 backdrop-blur-md rounded-xl border border-gray-200 shadow-[10px_10px_20px_#e0e8f0,-10px_-10px_20px_#ffffff]">
+                    <div className="flex items-center justify-between">
+                      <h4 className="font-medium text-gray-900">{goal.title}</h4>
+                      <span className="text-sm text-gray-600">{goal.current}/{goal.target} {goal.unit}</span>
                     </div>
-                    {/* <div className="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-2">
-                      <div
-                        className="bg-blue-600 h-2 rounded-full transition-all duration-300"
-                        style={{ width: `${Math.min((goal.current / goal.target) * 100, 100)}%` }}
-                      ></div>
-                    </div>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                      {Math.round((goal.current / goal.target) * 100)}% complete
-                    </p> */}
                   </div>
                 ))}
               </div>
-              <div className="flex justify-end mt-6">
+              <div className="flex justify-end mt-4">
                 <button
-                  onClick={() => {
-                    setShowHealthGoalsModal(false);
-                    navigate('/health-tracking');
-                  }}
-                  className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors duration-200"
+                  onClick={() => { setShowHealthGoalsModal(false); navigate('/health-tracking'); }}
+                  className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 md:px-4 md:py-2 rounded-xl font-semibold transition-all duration-300 shadow-[5px_5px_15px_#d1d9e6,-5px_-5px_15px_#ffffff]"
                 >
                   View Full Tracking
                 </button>
@@ -721,59 +379,20 @@ const PatientDashboard = () => {
           </div>
         )}
 
-        {/* Medication Modal */}
         {showMedicationModal && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 w-full max-w-md mx-4">
-              <div className="flex items-center justify-between mb-6">
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                  Medication Schedule
-                </h3>
-                <button
-                  onClick={() => setShowMedicationModal(false)}
-                  className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
-                >
-                  ×
-                </button>
+            <div className="bg-white/90 backdrop-blur-md rounded-2xl p-4 md:p-6 w-full max-w-xs md:max-w-md mx-2 md:mx-4 border border-gray-200 shadow-[10px_10px_20px_#e0e8f0,-10px_-10px_20px_#ffffff]">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold text-gray-900">Medication Schedule</h3>
+                <button onClick={() => setShowMedicationModal(false)} className="text-gray-400 hover:text-gray-600">×</button>
               </div>
-              <div className="space-y-4">
+              <div className="space-y-2">
                 {medications.map((med) => (
-                  <div
-                    key={med.id}
-                    className={`p-4 rounded-lg border-2 ${
-                      med.taken
-                        ? 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800'
-                        : 'bg-orange-50 dark:bg-orange-900/20 border-orange-200 dark:border-orange-800'
-                    }`}
-                  >
-                    <div className="flex items-center justify-between mb-2">
-                      <h4 className="font-medium text-gray-900 dark:text-white">
-                        {med.name}
-                      </h4>
-                      {/* <span
-                        className={`px-2 py-1 text-xs font-medium rounded-full ${
-                          med.taken
-                            ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
-                            : 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200'
-                        }`}
-                      >
-                        {med.taken ? 'Taken' : 'Pending'}
-                      </span> */}
+                  <div key={med.id} className={`p-2 md:p-3 rounded-xl border border-gray-200 shadow-[10px_10px_20px_#e0e8f0,-10px_-10px_20px_#ffffff] ${med.taken ? 'bg-green-50/70' : 'bg-orange-50/70'}`}>
+                    <div className="flex items-center justify-between">
+                      <h4 className="font-medium text-gray-900">{med.name}</h4>
                     </div>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
-                      {med.dosage} • {med.frequency}
-                    </p>
-                    {/* <p className="text-sm text-gray-600 dark:text-gray-400">
-                      Next dose: {med.nextDose}
-                    </p> */}
-                    {/* {!med.taken && (
-                      <button
-                        onClick={() => toast.success(`Marked ${med.name} as taken`)}
-                        className="mt-2 bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-xs transition-colors duration-200"
-                      >
-                        Mark as Taken
-                      </button>
-                    )} */}
+                    <p className="text-sm text-gray-600">{med.dosage} • {med.frequency}</p>
                   </div>
                 ))}
               </div>
@@ -781,82 +400,39 @@ const PatientDashboard = () => {
           </div>
         )}
 
-        {/* Symptom Tracker Modal */}
         {showSymptomTracker && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 w-full max-w-md mx-4">
-              <div className="flex items-center justify-between mb-6">
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                  Log Symptoms
-                </h3>
-                <button
-                  onClick={() => setShowSymptomTracker(false)}
-                  className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
-                >
-                  ×
-                </button>
+            <div className="bg-white/90 backdrop-blur-md rounded-2xl p-4 md:p-6 w-full max-w-xs md:max-w-md mx-2 md:mx-4 border border-gray-200 shadow-[10px_10px_20px_#e0e8f0,-10px_-10px_20px_#ffffff]">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold text-gray-900">Log Symptoms</h3>
+                <button onClick={() => setShowSymptomTracker(false)} className="text-gray-400 hover:text-gray-600">×</button>
               </div>
-              <div className="space-y-4">
+              <div className="space-y-3">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    How are you feeling today?
-                  </label>
-                  <div className="grid grid-cols-5 gap-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">How are you feeling today?</label>
+                  <div className="grid grid-cols-5 gap-1 md:gap-2">
                     {['😢', '😕', '😐', '🙂', '😊'].map((emoji, index) => (
-                      <button
-                        key={index}
-                        className="p-3 text-2xl hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors duration-200"
-                        onClick={() => toast.success(`Mood logged: ${emoji}`)}
-                      >
-                        {emoji}
-                      </button>
+                      <button key={index} className="p-2 md:p-3 text-2xl md:text-3xl hover:bg-gray-100/50 rounded-xl transition-all duration-300" onClick={() => toast.success(`Mood logged: ${emoji}`)}>{emoji}</button>
                     ))}
                   </div>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    Symptoms (if any)
-                  </label>
-                  <textarea
-                    rows={3}
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                    placeholder="Describe any symptoms you're experiencing..."
-                  />
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Symptoms (if any)</label>
+                  <textarea rows={2} className="w-full px-2 py-1 md:px-3 md:py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 bg-white/70 backdrop-blur-md text-gray-900 text-sm" placeholder="Describe any symptoms you're experiencing..." />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    Pain Level (0-10)
-                  </label>
-                  <input
-                    type="range"
-                    min="0"
-                    max="10"
-                    className="w-full"
-                  />
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Pain Level (0-10)</label>
+                  <input type="range" min="0" max="10" className="w-full" />
                 </div>
               </div>
-              <div className="flex justify-end space-x-3 mt-6">
-                <button
-                  onClick={() => setShowSymptomTracker(false)}
-                  className="px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors duration-200"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={() => {
-                    toast.success('Symptoms logged successfully!');
-                    setShowSymptomTracker(false);
-                  }}
-                  className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors duration-200"
-                >
-                  Save Entry
-                </button>
+              <div className="flex justify-end space-x-2 mt-3">
+                <button onClick={() => setShowSymptomTracker(false)} className="px-2 py-1 md:px-3 md:py-2 text-gray-700 hover:bg-gray-100/50 rounded-xl transition-all duration-300">Cancel</button>
+                <button onClick={() => { toast.success('Symptoms logged successfully!'); setShowSymptomTracker(false); }} className="px-2 py-1 md:px-3 md:py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl transition-all duration-300 shadow-[5px_5px_15px_#d1d9e6,-5px_-5px_15px_#ffffff]">Save Entry</button>
               </div>
             </div>
           </div>
         )}
 
-        {/* Payment Modal */}
         <PaymentModal
           isOpen={showPaymentModal}
           onClose={() => setShowPaymentModal(false)}
@@ -866,7 +442,7 @@ const PatientDashboard = () => {
           onSuccess={handlePaymentSuccess}
         />
       </div>
-    </DashboardLayout>
+    </div>
   );
 };
 

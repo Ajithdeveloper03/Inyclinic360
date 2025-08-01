@@ -60,10 +60,10 @@ const TimeSlotPicker: React.FC<TimeSlotPickerProps> = ({
     
     // Simulate some reserved slots based on doctor and date
     const reservedSlots = [
-      { time: '09:30', patientName: 'John Smith', appointmentType: 'Consultation', duration: 30 },
-      { time: '11:00', patientName: 'Sarah Wilson', appointmentType: 'Follow-up', duration: 20 },
-      { time: '14:30', patientName: 'Michael Davis', appointmentType: 'Treatment', duration: 45 },
-      { time: '16:00', patientName: 'Emma Thompson', appointmentType: 'Check-up', duration: 30 }
+      { time: '09:30', patientName: 'John', appointmentType: 'Consultation', duration: 30 },
+      { time: '11:00', patientName: 'Sarmila', appointmentType: 'Follow-up', duration: 20 },
+      { time: '14:30', patientName: 'Dinesh', appointmentType: 'Treatment', duration: 45 },
+      { time: '16:00', patientName: 'Emily', appointmentType: 'Check-up', duration: 30 }
     ];
 
     // Mark slots as reserved or unavailable
@@ -231,11 +231,11 @@ const TimeSlotPicker: React.FC<TimeSlotPickerProps> = ({
                   <span className="text-sm font-medium">
                     {formatTime(slot.time)}
                   </span>
-                  {slot.reserved && (
+                  {/* {slot.reserved && (
                     <span className="text-xs opacity-75">
                       {slot.duration}min
                     </span>
-                  )}
+                  )} */}
                 </div>
               </button>
               

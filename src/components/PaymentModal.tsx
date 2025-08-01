@@ -278,6 +278,11 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
                       )}
                     </label>
                   ))}
+                  <div className="flex space-x-3 mt-2">
+                    <img src="https://animationvisarts.com/wp-content/uploads/2023/11/Frame-43-1.png" alt="Google Pay" className="h-20 w-20" />
+                    {/* <img src="https://www.guide2gambling.in/wp-content/uploads/2021/10/PhonePe-Logo.png" alt="PhonePe" className="h-8 w-8" /> */}
+                    <img src="https://thefinrate.com/wp-content/uploads/2023/09/Screenshot-2024-11-08-180132.png" alt="Paytm" className="h-20 w-25" />
+                  </div>
                 </div>
               ) : (
                 <div className="space-y-4">

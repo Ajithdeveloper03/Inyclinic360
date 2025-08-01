@@ -23,6 +23,7 @@ import AIInsightsPage from './pages/AIInsightsPage';
 import EmergencyPage from './pages/EmergencyPage';
 import HealthTrackingPage from './pages/HealthTrackingPage';
 import InsurancePage from './pages/InsurancePage';
+import AppointmentBookingPage from './components/AppointmentBookingModal';
 
 function App() {
   return (
@@ -33,176 +34,177 @@ function App() {
             <Routes>
               <Route path="/" element={<LandingPage />} />
               <Route path="/login" element={<Login />} />
-              
+              <Route path="/book-appointment" element={<AppointmentBookingPage />} />
+
               {/* Clinic Routes */}
-              <Route 
-                path="/clinic-dashboard" 
+              <Route
+                path="/clinic-dashboard"
                 element={
                   <ProtectedRoute requiredRole="clinic">
                     <ClinicDashboard />
                   </ProtectedRoute>
-                } 
+                }
               />
-              <Route 
-                path="/appointments" 
+              <Route
+                path="/appointments"
                 element={
                   <ProtectedRoute requiredRole="clinic">
                     <AppointmentsPage />
                   </ProtectedRoute>
-                } 
+                }
               />
-              <Route 
-                path="/patients" 
+              <Route
+                path="/patients"
                 element={
                   <ProtectedRoute requiredRole="clinic">
                     <PatientsPage />
                   </ProtectedRoute>
-                } 
+                }
               />
-              <Route 
-                path="/records" 
+              <Route
+                path="/records"
                 element={
                   <ProtectedRoute requiredRole="clinic">
                     <MedicalRecordsPage />
                   </ProtectedRoute>
-                } 
+                }
               />
-              <Route 
-                path="/staff" 
+              <Route
+                path="/staff"
                 element={
                   <ProtectedRoute requiredRole="clinic">
                     <StaffManagementPage />
                   </ProtectedRoute>
-                } 
+                }
               />
-              <Route 
-                path="/analytics" 
+              <Route
+                path="/analytics"
                 element={
                   <ProtectedRoute requiredRole="clinic">
                     <AnalyticsPage />
                   </ProtectedRoute>
-                } 
+                }
               />
-              <Route 
-                path="/telemedicine" 
+              <Route
+                path="/telemedicine"
                 element={
                   <ProtectedRoute requiredRole="clinic">
                     <TelemedicinePage />
                   </ProtectedRoute>
-                } 
+                }
               />
-              <Route 
-                path="/ai-insights" 
+              <Route
+                path="/ai-insights"
                 element={
                   <ProtectedRoute requiredRole="clinic">
                     <AIInsightsPage />
                   </ProtectedRoute>
-                } 
+                }
               />
-              <Route 
-                path="/emergency" 
+              <Route
+                path="/emergency"
                 element={
                   <ProtectedRoute requiredRole="clinic">
                     <EmergencyPage />
                   </ProtectedRoute>
-                } 
+                }
               />
-              
+
               {/* Patient Routes */}
-              <Route 
-                path="/patient-dashboard" 
+              <Route
+                path="/patient-dashboard"
                 element={
                   <ProtectedRoute requiredRole="patient">
                     <PatientDashboard />
                   </ProtectedRoute>
-                } 
+                }
               />
-              <Route 
-                path="/my-appointments" 
+              <Route
+                path="/my-appointments"
                 element={
                   <ProtectedRoute requiredRole="patient">
                     <MyAppointmentsPage />
                   </ProtectedRoute>
-                } 
+                }
               />
-              <Route 
-                path="/my-records" 
+              <Route
+                path="/my-records"
                 element={
                   <ProtectedRoute requiredRole="patient">
                     <MyRecordsPage />
                   </ProtectedRoute>
-                } 
+                }
               />
-              <Route 
-                path="/payments" 
+              <Route
+                path="/payments"
                 element={
                   <ProtectedRoute requiredRole="patient">
                     <PaymentsPage />
                   </ProtectedRoute>
-                } 
+                }
               />
-              <Route 
-                path="/health-assistant" 
+              <Route
+                path="/health-assistant"
                 element={
                   <ProtectedRoute requiredRole="patient">
                     <HealthAssistantPage />
                   </ProtectedRoute>
-                } 
+                }
               />
-              <Route 
-                path="/patient-telemedicine" 
+              <Route
+                path="/patient-telemedicine"
                 element={
                   <ProtectedRoute requiredRole="patient">
                     <TelemedicinePage />
                   </ProtectedRoute>
-                } 
+                }
               />
-              <Route 
-                path="/health-tracking" 
+              <Route
+                path="/health-tracking"
                 element={
                   <ProtectedRoute requiredRole="patient">
                     <HealthTrackingPage />
                   </ProtectedRoute>
-                } 
+                }
               />
-              <Route 
-                path="/insurance" 
+              <Route
+                path="/insurance"
                 element={
                   <ProtectedRoute requiredRole="patient">
                     <InsurancePage />
                   </ProtectedRoute>
-                } 
+                }
               />
-              <Route 
-                path="/emergency-contact" 
+              <Route
+                path="/emergency-contact"
                 element={
                   <ProtectedRoute requiredRole="patient">
                     <EmergencyPage />
                   </ProtectedRoute>
-                } 
+                }
               />
-              
+
               {/* Shared Routes */}
-              <Route 
-                path="/settings" 
+              <Route
+                path="/settings"
                 element={
                   <ProtectedRoute requiredRole="clinic">
                     <SettingsPage />
                   </ProtectedRoute>
-                } 
+                }
               />
-              <Route 
-                path="/patient-settings" 
+              <Route
+                path="/patient-settings"
                 element={
                   <ProtectedRoute requiredRole="patient">
                     <SettingsPage />
                   </ProtectedRoute>
-                } 
+                }
               />
-              
+
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
-            <Toaster 
+            <Toaster
               position="top-right"
               toastOptions={{
                 duration: 4000,

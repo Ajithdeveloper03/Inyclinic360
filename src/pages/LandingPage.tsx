@@ -392,9 +392,7 @@ const sliderSettings = {
             <p className="text-xl text-gray-600 dark:text-gray-300 mb-8 max-w-6xl mx-auto">
               Are you tired of managing patient records manually? Struggling with double bookings, missing appointments, or slow documentation? InyClinic360° is your one-stop solution – a robust, cloud-based clinic management software designed for modern clinics in Tamil Nadu, across India, and in the USA.
             </p>
-            <p className="text-lg text-gray-600 dark:text-gray-300 mb-8 max-w-5xl mx-auto">
-              Whether you're in Chennai, Madurai, Coimbatore, Trichy or anywhere in India and USA, InyClinic360° empowers clinics across Tamil Nadu with fully localized solutions. From patient interfaces to state-compliant billing, we understand your needs.
-            </p>
+           
             <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
               <button className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-lg font-semibold text-lg transition-colors duration-200 flex items-center justify-center space-x-2">
                 <Calendar className="h-5 w-5" />
@@ -484,7 +482,7 @@ const sliderSettings = {
               🎯 Designed For
             </h2>
             <p className="text-xl text-blue-100 max-w-3xl mx-auto">
-              Engineered for healthcare excellence across all practice sizes - from solo practitioners to multi-specialty medical centers in Tamil Nadu, India, and the USA.
+              Whether you're in Chennai, Madurai, Coimbatore, Trichy or anywhere in India and USA, InyClinic360° empowers clinics across Tamil Nadu with fully localized solutions. From patient interfaces to state-compliant billing, we understand your needs.
             </p>
           </div>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
