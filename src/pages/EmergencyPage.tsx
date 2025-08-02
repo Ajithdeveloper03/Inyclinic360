@@ -1,172 +1,498 @@
-import React, { useState } from 'react';
-import DashboardLayout from '../components/DashboardLayout';
-import { Zap, Phone, AlertTriangle, Clock, User, MapPin, Activity, Heart } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { X, Zap, Phone, AlertTriangle, Clock, CheckCircle, User, CreditCard } from 'lucide-react';
+import PaymentModal from '../components/PaymentModal';
+import toast from 'react-hot-toast';
+
+interface Doctor {
+  id: string;
+  name: string;
+  specialization: string;
+  avatar?: string;
+}
+
+interface Timeslot {
+  time: string;
+}
+
+const PLATFORM_FEE = 15;
 
 const EmergencyPage = () => {
-  const [emergencyLevel, setEmergencyLevel] = useState<'low' | 'medium' | 'high' | 'critical'>('medium');
-  const [activeEmergencies, setActiveEmergencies] = useState([
-    { id: 1, patient: 'John Doe', age: 45, condition: 'Chest Pain', severity: 'critical', time: '5 min ago', location: 'ER Room 1', vitals: { bp: '180/120', hr: '110', temp: '98.6°F' } },
-    { id: 2, patient: 'Sarah Smith', age: 32, condition: 'Severe Allergic Reaction', severity: 'high', time: '12 min ago', location: 'ER Room 3', vitals: { bp: '90/60', hr: '130', temp: '99.2°F' } },
-    { id: 3, patient: 'Mike Johnson', age: 28, condition: 'Broken Arm', severity: 'medium', time: '25 min ago', location: 'ER Room 5', vitals: { bp: '120/80', hr: '85', temp: '98.4°F' } }
-  ]);
+  const navigate = useNavigate();
+  const [step, setStep] = useState(1);
+  const [formData, setFormData] = useState({
+    fname: '',
+    lname: '',
+    age: '',
+    gender: '',
+    mobile: '',
+    otp: '',
+    category: '',
+    otherDetails: '',
+    doctor: '',
+    timeslot: '',
+  });
+  const [otpTimer, setOtpTimer] = useState(30);
+  const [otpSent, setOtpSent] = useState(false);
+  const [isOtpVerified, setIsOtpVerified] = useState(false);
+  const [showPayment, setShowPayment] = useState(false);
+  const [doctors, setDoctors] = useState<Doctor[]>([]);
+  const [timeslots, setTimeslots] = useState<Timeslot[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
-  const emergencyContacts = [
-    { name: 'Ambulance', number: '108', type: 'primary' },
-    { name: 'Police', number: '100', type: 'specialized' },
-    { name: 'Hospital Security', number: '123-4567', type: 'internal' }
-  ];
+  const categories = ['Cardiac', 'Trauma', 'Stroke', 'Other'];
 
-  const emergencyProtocols = [
-    { id: 1, title: 'Cardiac Arrest Protocol', steps: 5, lastUpdated: '2024-01-15' },
-    { id: 2, title: 'Stroke Response Protocol', steps: 7, lastUpdated: '2024-01-10' },
-    { id: 4, title: 'Allergic Reaction Protocol', steps: 4, lastUpdated: '2024-01-05' }
-  ];
+  useEffect(() => {
+    let timer: NodeJS.Timeout;
+    if (otpSent && !isOtpVerified) {
+      timer = setInterval(() => {
+        setOtpTimer(prev => {
+          if (prev <= 1) {
+            clearInterval(timer);
+            setOtpSent(false);
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    }
+    return () => clearInterval(timer);
+  }, [otpSent, isOtpVerified]);
 
-  const getSeverityColor = (severity: string) => {
-    switch (severity) {
-      case 'critical': return 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-300';
-      case 'high': return 'bg-orange-100 text-orange-800 dark:bg-orange-900/20 dark:text-orange-300';
-      case 'medium': return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-300';
-      case 'low': return 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-300';
-      default: return 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200';
+  const sendOtp = () => {
+    if (/^\d{10}$/.test(formData.mobile)) {
+      setOtpSent(true);
+      setOtpTimer(30);
+      toast.success('OTP sent to your mobile');
+    } else {
+      toast.error('Please enter a valid 10-digit mobile number');
     }
   };
 
-  const handleEmergencyCall = (number: string) => {
-    window.open(`tel:${number}`, '_self');
+  const verifyOtp = () => {
+    if (formData.otp === '1234') {
+      setIsOtpVerified(true);
+      toast.success('OTP verified successfully');
+    } else {
+      toast.error('Invalid OTP');
+    }
   };
 
-  const handleEmergencyAlert = () => {
-    alert('Emergency alert sent to all available staff!');
+  const fetchDoctors = (category: string) => {
+    if (!category) return;
+    setLoading(true);
+    const mockDoctors: Doctor[] = [
+      { id: '1', name: 'Dr. Smith', specialization: category === 'Cardiac' ? 'Cardiology' : category === 'Trauma' ? 'Orthopedics' : category === 'Stroke' ? 'Neurology' : 'General', avatar: 'https://via.placeholder.com/50' },
+      { id: '2', name: 'Dr. Jones', specialization: category === 'Cardiac' ? 'Cardiology' : category === 'Trauma' ? 'Trauma Surgery' : category === 'Stroke' ? 'Neurology' : 'General', avatar: 'https://via.placeholder.com/50' },
+    ];
+    setDoctors(mockDoctors);
+    setError('');
+    setLoading(false);
+  };
+
+  const fetchTimeslots = (doctorId: string) => {
+    if (!doctorId) return;
+    setLoading(true);
+    const mockTimeslots: Timeslot[] = [
+      { time: '10:00 AM' },
+      { time: '11:00 AM' },
+      { time: '12:00 PM' },
+    ];
+    setTimeslots(mockTimeslots);
+    setError('');
+    setLoading(false);
+  };
+
+  const handleInputChange = (field: string, value: string) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+    if (field === 'category' && value) {
+      setFormData(prev => ({ ...prev, doctor: '', timeslot: '' }));
+      setDoctors([]);
+      setTimeslots([]);
+      fetchDoctors(value);
+    }
+    if (field === 'doctor' && value) {
+      setFormData(prev => ({ ...prev, timeslot: '' }));
+      setTimeslots([]);
+      fetchTimeslots(value);
+    }
+  };
+
+  const validateStep = (stepNumber: number) => {
+    switch (stepNumber) {
+      case 1: return formData.fname && formData.lname && formData.age && formData.gender && formData.mobile && isOtpVerified;
+      case 2: return formData.category && formData.doctor && formData.timeslot;
+      case 3: return true;
+      default: return true;
+    }
+  };
+
+  const handleNext = () => {
+    if (validateStep(step)) {
+      setStep(step + 1);
+    } else {
+      toast.error('Please fill all required fields');
+    }
+  };
+
+  const handlePrevious = () => {
+    setStep(step - 1);
+  };
+
+  const handleBookEmergency = () => {
+    if (validateStep(3)) {
+      setShowPayment(true);
+    } else {
+      toast.error('Please fill all required fields');
+    }
+  };
+
+  const handlePaymentSuccess = (paymentId: string) => {
+    const emergencyBooking = {
+      id: Date.now(),
+      name: formData.name,
+      category: formData.category,
+      doctorName: doctors.find(d => d.id === formData.doctor)?.name,
+      timeslot: formData.timeslot,
+      fee: PLATFORM_FEE,
+      status: 'scheduled',
+      paymentId,
+    };
+    navigate('/emergency-confirmation', { state: { emergencyBooking } });
+    setShowPayment(false);
+    resetForm();
+    toast.success('Emergency booked and payment completed! Confirmation sent via WhatsApp.');
+  };
+
+  const resetForm = () => {
+    setStep(1);
+    setFormData({
+      fname: '',
+      lname: '',
+      age: '',
+      gender: '',
+      mobile: '',
+      otp: '',
+      category: '',
+      otherDetails: '',
+      doctor: '',
+      timeslot: '',
+    });
+    setOtpSent(false);
+    setIsOtpVerified(false);
+    setOtpTimer(30);
+    setDoctors([]);
+    setTimeslots([]);
+    setError('');
+    setShowPayment(false);
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-4 md:p-8">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-4">
-        <div>
-          <h1 className="text-xl md:text-2xl font-bold text-gray-900">Emergency Management</h1>
-          <p className="text-gray-600 text-sm md:text-base">Real-time emergency response and crisis management</p>
-        </div>
-        <div className="flex flex-col md:flex-row items-center space-y-2 md:space-y-0 md:space-x-2 mt-2 md:mt-0">
-          <button onClick={handleEmergencyAlert} className="bg-red-600 hover:bg-red-700 text-white px-3 py-2 md:px-4 md:py-2 rounded-lg font-medium flex items-center space-x-1 md:space-x-2 shadow-[5px_5px_15px_#d1d9e6,-5px_-5px_15px_#ffffff] w-full md:w-auto">
-            <Zap className="h-4 w-4 md:h-5 md:w-5" />
-            <span className="text-sm md:text-base">Emergency Alert</span>
-          </button>
-          <button onClick={() => handleEmergencyCall('108')} className="bg-orange-600 hover:bg-orange-700 text-white px-3 py-2 md:px-4 md:py-2 rounded-lg font-medium flex items-center space-x-1 md:space-x-2 shadow-[5px_5px_15px_#d1d9e6,-5px_-5px_15px_#ffffff] w-full md:w-auto">
-            <Phone className="h-4 w-4 md:h-5 md:w-5" />
-            <span className="text-sm md:text-base">Call 108</span>
+    <div className="min-h-screen bg-gradient-to-br from-red-50 to-orange-50 flex items-center justify-center p-4 w-full">
+      <div className="bg-white rounded-2xl shadow-[inset_10px_10px_20px_#e0e0e0,inset_-10px_-10px_20px_#ffffff] p-6 w-full max-w-4xl">
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-2xl font-bold text-red-900">Emergency Booking</h2>
+          <button
+            onClick={() => {
+              resetForm();
+              navigate('/patient-dashboard');
+            }}
+            className="text-red-400 hover:text-red-600 rounded-full w-10 h-10 flex items-center justify-center shadow-[inset_2px_2px_5px_#e0e0e0,inset_-2px_-2px_5px_#ffffff]"
+          >
+            <X className="h-6 w-6" />
           </button>
         </div>
-      </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
-        <div className="bg-white rounded-2xl shadow-lg p-3 md:p-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600">Active Emergencies</p>
-              <p className="text-xl md:text-2xl font-bold text-red-600">{activeEmergencies.length}</p>
-            </div>
-            <div className="w-10 h-10 bg-red-100 rounded-xl flex items-center justify-center"><AlertTriangle className="h-5 w-5 text-red-600" /></div>
-          </div>
-          <p className="text-sm text-red-600 mt-1">Immediate attention required</p>
-        </div>
-        <div className="bg-white rounded-2xl shadow-lg p-3 md:p-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600">Available Staff</p>
-              <p className="text-xl md:text-2xl font-bold text-gray-900">12</p>
-            </div>
-            <div className="w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center"><User className="h-5 w-5 text-green-600" /></div>
-          </div>
-          <p className="text-sm text-green-600 mt-1">All departments covered</p>
-        </div>
-        <div className="bg-white rounded-2xl shadow-lg p-3 md:p-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600">Bed Availability</p>
-              <p className="text-xl md:text-2xl font-bold text-gray-900">8/15</p>
-            </div>
-            <div className="w-10 h-10 bg-purple-100 rounded-xl flex items-center justify-center"><Activity className="h-5 w-5 text-purple-600" /></div>
-          </div>
-          <p className="text-sm text-yellow-600 mt-1">53% capacity</p>
-        </div>
-      </div>
-
-      <div className="bg-white rounded-2xl shadow-lg">
-        <div className="p-4 md:p-6 border-b border-gray-200">
-          <h2 className="text-lg md:text-xl font-semibold text-gray-900">Active Emergencies</h2>
-        </div>
-        <div className="divide-y divide-gray-200">
-          {activeEmergencies.map((emergency) => (
-            <div key={emergency.id} className="p-3 md:p-4 hover:bg-gray-50 transition-colors duration-200">
-              <div className="flex flex-col md:flex-row items-start md:items-center justify-between">
-                <div className="flex items-start space-x-2 md:space-x-4 mb-2 md:mb-0">
-                  <div className="w-10 h-10 bg-red-100 rounded-xl flex items-center justify-center"><Heart className="h-5 w-5 text-red-600" /></div>
-                  <div className="flex-1">
-                    <div className="flex items-center space-x-2 mb-1">
-                      <h3 className="text-lg font-semibold text-gray-900">{emergency.patient}</h3>
-                      <span className="text-sm text-gray-600">Age {emergency.age}</span>
-                      <span className={`px-1 md:px-2 py-1 text-xs md:text-sm font-medium rounded-full ${getSeverityColor(emergency.severity)}`}>{emergency.severity}</span>
-                    </div>
-                    <p className="text-gray-600 mb-1"><strong>Condition:</strong> {emergency.condition}</p>
-                    <div className="flex items-center space-x-2 text-sm text-gray-600">
-                      <div className="flex items-center space-x-1"><Clock className="h-4 w-4" /><span>{emergency.time}</span></div>
-                      <div className="flex items-center space-x-1"><MapPin className="h-4 w-4" /><span>{emergency.location}</span></div>
-                    </div>
-                  </div>
-                </div>
-                <div className="text-right mt-2 md:mt-0">
-                  <div className="text-sm text-gray-600 space-y-1">
-                    <div><strong>BP:</strong> {emergency.vitals.bp}</div>
-                    <div><strong>HR:</strong> {emergency.vitals.hr}</div>
-                    <div><strong>Temp:</strong> {emergency.vitals.temp}</div>
-                  </div>
-                </div>
+        <div className="flex items-center mb-6">
+          {[1, 2, 3].map((stepNumber) => (
+            <React.Fragment key={stepNumber}>
+              <div
+                className={`flex items-center justify-center w-10 h-10 rounded-full text-base font-medium ${
+                  step >= stepNumber
+                    ? 'bg-red-600 text-white shadow-[inset_2px_2px_5px_#8b0000,inset_-2px_-2px_5px_#ff4040]'
+                    : 'bg-gray-200 text-gray-600 shadow-[inset_2px_2px_5px_#e0e0e0,inset_-2px_-2px_5px_#ffffff]'
+                }`}
+              >
+                {step > stepNumber ? <CheckCircle className="h-6 w-6" /> : stepNumber}
               </div>
-            </div>
+              {stepNumber < 3 && (
+                <div
+                  className={`flex-1 h-1 mx-2 ${
+                    step > stepNumber ? 'bg-red-600 shadow-[inset_1px_1px_3px_#8b0000]' : 'bg-gray-200 shadow-[inset_1px_1px_3px_#e0e0e0]'
+                  }`}
+                />
+              )}
+            </React.Fragment>
           ))}
         </div>
-      </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-1 gap-4 mt-6">
-        
-        <div className="bg-white rounded-2xl shadow-lg p-4 md:p-6">
-          <h2 className="text-lg md:text-xl font-semibold text-gray-900 mb-4">Emergency Contacts</h2>
-          <div className="space-y-2">
-            {emergencyContacts.map((contact, index) => (
-              <div key={index} className="flex items-center justify-between p-2 md:p-3 bg-gray-50 rounded-lg">
-                <div>
-                  <h3 className="font-medium text-gray-900">{contact.name}</h3>
-                  <p className="text-sm text-gray-600 capitalize">{contact.type}</p>
-                </div>
-                <button onClick={() => handleEmergencyCall(contact.number)} className="flex items-center space-x-1 bg-blue-600 hover:bg-blue-700 text-white px-2 py-1 md:px-3 md:py-1 rounded-lg text-sm">
-                  <Phone className="h-3 w-3 md:h-4 md:w-4" />
-                  <span>{contact.number}</span>
+        <div className="flex justify-between mb-6 text-sm">
+          <span className={step >= 1 ? 'text-red-600' : 'text-gray-500'}>Patient Info</span>
+          <span className={step >= 2 ? 'text-orange-600' : 'text-gray-500'}>Emergency Details</span>
+          <span className={step >= 3 ? 'text-red-600' : 'text-gray-500'}>Confirm</span>
+        </div>
+
+        {step === 1 && (
+          <div className="space-y-6">
+            <div className="grid grid-cols-2 gap-4">
+            <div className="p-4 bg-white rounded-lg shadow-[inset_10px_10px_20px_#f0f0f0,inset_-10px_-10px_20px_#ffffff]">
+              <label className="block text-sm font-medium text-red-700 mb-2">First Name *</label>
+              <input
+                type="text"
+                value={formData.fname}
+                onChange={(e) => handleInputChange('fname', e.target.value)}
+                className="w-full px-4 py-3 border-none bg-white rounded-lg focus:ring-2 focus:ring-red-500 text-red-900 shadow-[inset_4px_4px_8px_#e0e0e0,inset_-4px_-4px_8px_#ffffff]"
+              />
+            </div>
+            <div className="p-4 bg-white rounded-lg shadow-[inset_10px_10px_20px_#f0f0f0,inset_-10px_-10px_20px_#ffffff]">
+              <label className="block text-sm font-medium text-red-700 mb-2">Last Name *</label>
+              <input
+                type="text"
+                value={formData.lname}
+                onChange={(e) => handleInputChange('lname', e.target.value)}
+                className="w-full px-4 py-3 border-none bg-white rounded-lg focus:ring-2 focus:ring-red-500 text-red-900 shadow-[inset_4px_4px_8px_#e0e0e0,inset_-4px_-4px_8px_#ffffff]"
+              />
+            </div>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="p-4 bg-white rounded-lg shadow-[inset_10px_10px_20px_#f0f0f0,inset_-10px_-10px_20px_#ffffff]">
+                <label className="block text-sm font-medium text-red-700 mb-2">Age *</label>
+                <input
+                  type="number"
+                  value={formData.age}
+                  onChange={(e) => handleInputChange('age', e.target.value)}
+                  className="w-full px-4 py-3 border-none bg-white rounded-lg focus:ring-2 focus:ring-red-500 text-red-900 shadow-[inset_4px_4px_8px_#e0e0e0,inset_-4px_-4px_8px_#ffffff]"
+                />
+              </div>
+              <div className="p-4 bg-white rounded-lg shadow-[inset_10px_10px_20px_#f0f0f0,inset_-10px_-10px_20px_#ffffff]">
+                <label className="block text-sm font-medium text-red-700 mb-2">Gender *</label>
+                <select
+                  value={formData.gender}
+                  onChange={(e) => handleInputChange('gender', e.target.value)}
+                  className="w-full px-4 py-3 border-none bg-white rounded-lg focus:ring-2 focus:ring-red-500 text-red-900 shadow-[inset_4px_4px_8px_#e0e0e0,inset_-4px_-4px_8px_#ffffff]"
+                >
+                  <option value="">Select Gender</option>
+                  <option value="Male">Male</option>
+                  <option value="Female">Female</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+            </div>
+            <div className="p-4 bg-white rounded-lg shadow-[inset_10px_10px_20px_#f0f0f0,inset_-10px_-10px_20px_#ffffff]">
+              <label className="block text-sm font-medium text-red-700 mb-2">Mobile * (with OTP)</label>
+              <div className="flex space-x-2">
+                <input
+                  type="tel"
+                  value={formData.mobile}
+                  onChange={(e) => handleInputChange('mobile', e.target.value)}
+                  maxLength={10}
+                  className="w-2/3 px-4 py-3 border-none bg-white rounded-lg focus:ring-2 focus:ring-red-500 text-red-900 shadow-[inset_4px_4px_8px_#e0e0e0,inset_-4px_-4px_8px_#ffffff]"
+                  placeholder="Enter 10-digit mobile"
+                />
+                <button
+                  onClick={sendOtp}
+                  disabled={otpSent || !formData.mobile || formData.mobile.length !== 10}
+                  className="w-1/3 px-4 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:bg-gray-400 shadow-[inset_4px_4px_8px_#8b0000,inset_-4px_-4px_8px_#ff4040]"
+                >
+                  {otpSent ? 'Resend OTP' : 'Send OTP'}
                 </button>
               </div>
-            ))}
+              {otpSent && !isOtpVerified && (
+                <div className="mt-2 flex space-x-2">
+                  <input
+                    type="text"
+                    value={formData.otp}
+                    onChange={(e) => handleInputChange('otp', e.target.value)}
+                    className="w-2/3 px-4 py-3 border-none bg-white rounded-lg focus:ring-2 focus:ring-red-500 text-red-900 shadow-[inset_4px_4px_8px_#e0e0e0,inset_-4px_-4px_8px_#ffffff]"
+                    placeholder="Enter OTP"
+                  />
+                  <button
+                    onClick={verifyOtp}
+                    disabled={!formData.otp}
+                    className="w-1/3 px-4 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:bg-gray-400 shadow-[inset_4px_4px_8px_#4b8c4b,inset_-4px_-4px_8px_#6bb46b]"
+                  >
+                    Verify OTP
+                  </button>
+                </div>
+              )}
+              {otpSent && !isOtpVerified && (
+                <p className="text-sm text-red-600 mt-2">Resend OTP in {otpTimer} seconds</p>
+              )}
+            </div>
           </div>
-        </div>
-      </div>
+        )}
 
-      <div className="bg-gradient-to-r from-red-50 to-orange-50 rounded-2xl shadow-lg p-4 md:p-6 mt-4">
-        <div className="flex items-center space-x-2 mb-2">
-          <div className="w-10 h-10 bg-red-100 rounded-xl flex items-center justify-center"><Zap className="h-5 w-5 text-red-600" /></div>
-          <div>
-            <h2 className="text-lg md:text-xl font-semibold text-gray-900">Emergency Alert System</h2>
-            <p className="text-gray-600">Instantly notify all available staff and emergency services</p>
+        {step === 2 && (
+          <div className="space-y-6">
+            <div className="p-4 bg-white rounded-lg shadow-[inset_10px_10px_20px_#f0f0f0,inset_-10px_-10px_20px_#ffffff]">
+              <label className="block text-sm font-medium text-red-700 mb-2">Emergency Category *</label>
+              <select
+                value={formData.category}
+                onChange={(e) => handleInputChange('category', e.target.value)}
+                className="w-full px-4 py-3 border-none bg-white rounded-lg focus:ring-2 focus:ring-red-500 text-red-900 shadow-[inset_4px_4px_8px_#e0e0e0,inset_-4px_-4px_8px_#ffffff]"
+              >
+                <option value="">Select Category</option>
+                {categories.map(cat => (
+                  <option key={cat} value={cat}>{cat}</option>
+                ))}
+              </select>
+            </div>
+            {formData.category && (
+              <div className="p-4 bg-white rounded-lg shadow-[inset_10px_10px_20px_#f0f0f0,inset_-10px_-10px_20px_#ffffff]">
+                <label className="block text-sm font-medium text-red-700 mb-2">Select Doctor *</label>
+                {loading && <p className="text-sm text-red-600">Loading doctors...</p>}
+                {error && <p className="text-sm text-red-600">{error}</p>}
+                {!loading && doctors.length === 0 && !error && <p className="text-sm text-red-600">No doctors available</p>}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {doctors.map((doc) => (
+                    <div
+                      key={doc.id}
+                      onClick={() => handleInputChange('doctor', doc.id)}
+                      className={`p-4 rounded-lg cursor-pointer transition-all duration-200 bg-white shadow-[inset_6px_6px_12px_#f0f0f0,inset_-6px_-6px_12px_#ffffff] ${formData.doctor === doc.id ? 'border-2 border-red-500' : 'hover:shadow-[inset_4px_4px_8px_#d1d1d1,inset_-4px_-4px_8px_#ffffff]'}`}
+                    >
+                      <div className="flex items-center space-x-3">
+                        <img src={doc.avatar || 'https://via.placeholder.com/50'} alt={doc.name} className="w-12 h-12 rounded-full object-cover" />
+                        <div className="flex-1">
+                          <h4 className="font-semibold text-red-900">{doc.name}</h4>
+                          <p className="text-sm text-red-600">{doc.specialization}</p>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+            <div className="p-4 bg-white rounded-lg shadow-[inset_10px_10px_20px_#f0f0f0,inset_-10px_-10px_20px_#ffffff]">
+              <label className="block text-sm font-medium text-red-700 mb-2">Timeslot *</label>
+              {loading && <p className="text-sm text-red-600">Loading timeslots...</p>}
+              {error && <p className="text-sm text-red-600">{error}</p>}
+              {!loading && timeslots.length === 0 && !error && <p className="text-sm text-red-600">No timeslots available</p>}
+              <select
+                value={formData.timeslot}
+                onChange={(e) => handleInputChange('timeslot', e.target.value)}
+                className="w-full px-4 py-3 border-none bg-white rounded-lg focus:ring-2 focus:ring-red-500 text-red-900 shadow-[inset_4px_4px_8px_#e0e0e0,inset_-4px_-4px_8px_#ffffff]"
+              >
+                <option value="">Select Timeslot</option>
+                {timeslots.map((slot) => (
+                  <option key={slot.time} value={slot.time}>{slot.time}</option>
+                ))}
+              </select>
+            </div>
+            {formData.category === 'Other' && (
+              <div className="p-4 bg-white rounded-lg shadow-[inset_10px_10px_20px_#f0f0f0,inset_-10px_-10px_20px_#ffffff]">
+                <label className="block text-sm font-medium text-red-700 mb-2">Additional Details</label>
+                <textarea
+                  value={formData.otherDetails}
+                  onChange={(e) => handleInputChange('otherDetails', e.target.value)}
+                  rows={4}
+                  className="w-full px-4 py-3 border-none bg-white rounded-lg focus:ring-2 focus:ring-red-500 text-red-900 shadow-[inset_4px_4px_8px_#e0e0e0,inset_-4px_-4px_8px_#ffffff]"
+                  placeholder="Describe the emergency..."
+                />
+              </div>
+            )}
           </div>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-          <button onClick={handleEmergencyAlert} className="bg-red-600 hover:bg-red-700 text-white p-2 md:p-3 rounded-lg font-medium flex items-center justify-center space-x-1">
-            <AlertTriangle className="h-4 w-4 md:h-5 md:w-5" />
-            <span>Red Alert</span>
+        )}
+
+        {step === 3 && (
+          <div className="space-y-6">
+            <div className="p-6 bg-white rounded-lg shadow-[inset_10px_10px_20px_#f0f0f0,inset_-10px_-10px_20px_#ffffff]">
+              <h4 className="text-lg font-semibold text-red-900 mb-4">Emergency Summary</h4>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-3">
+                  <div className="p-4 bg-white rounded-lg shadow-[inset_6px_6px_12px_#f0f0f0,inset_-6px_-6px_12px_#ffffff]">
+                    <div className="flex items-center space-x-3">
+                      <User className="h-5 w-5 text-red-600" />
+                      <div>
+                        <p className="font-medium text-red-900">{formData.fname} {formData.lname}</p>
+                        <p className="text-sm text-red-600">Age: {formData.age}, {formData.gender}</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="p-4 bg-white rounded-lg shadow-[inset_6px_6px_12px_#f0f0f0,inset_-6px_-6px_12px_#ffffff]">
+                    <div className="flex items-center space-x-3">
+                      <Zap className="h-5 w-5 text-red-600" />
+                      <div>
+                        <p className="font-medium text-red-900">{formData.category}</p>
+                        {formData.otherDetails && <p className="text-sm text-red-600">{formData.otherDetails}</p>}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div className="space-y-3">
+                  <div className="p-4 bg-white rounded-lg shadow-[inset_6px_6px_12px_#f0f0f0,inset_-6px_-6px_12px_#ffffff]">
+                    <div className="flex items-center space-x-3">
+                      <User className="h-5 w-5 text-red-600" />
+                      <div>
+                        <p className="font-medium text-red-900">{doctors.find((d) => d.id === formData.doctor)?.name || 'Not selected'}</p>
+                        <p className="text-sm text-red-600">{doctors.find((d) => d.id === formData.doctor)?.specialization || ''}</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="p-4 bg-white rounded-lg shadow-[inset_6px_6px_12px_#f0f0f0,inset_-6px_-6px_12px_#ffffff]">
+                    <div className="flex items-center space-x-3">
+                      <Clock className="h-5 w-5 text-red-600" />
+                      <div>
+                        <p className="font-medium text-red-900">{formData.timeslot || 'Not selected'}</p>
+                        <p className="text-sm text-red-600">Platform Fee: ₹{PLATFORM_FEE}</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="p-4 bg-white rounded-lg shadow-[inset_10px_10px_20px_#f0f0f0,inset_-10px_-10px_20px_#ffffff]">
+              <h5 className="font-medium text-yellow-800 mb-2">Important Notes:</h5>
+              <ul className="text-sm text-yellow-700 space-y-1">
+                <li>• Arrive immediately</li>
+                {/* <li>• Contact emergency services if critical</li> */}
+                <li>• Payment of ₹{PLATFORM_FEE} required to confirm booking</li>
+              </ul>
+            </div>
+          </div>
+        )}
+
+        <div className="mt-6 flex justify-between">
+          <button
+            onClick={step === 1 ? () => navigate('/patient-dashboard') : handlePrevious}
+            className="px-6 py-3 text-red-700 hover:bg-gray-100 rounded-lg shadow-[inset_4px_4px_8px_#e0e0e0,inset_-4px_-4px_8px_#ffffff] transition-shadow duration-200"
+          >
+            {step === 1 ? 'Cancel' : 'Previous'}
           </button>
-          <button className="bg-purple-600 hover:bg-purple-700 text-white p-2 md:p-3 rounded-lg font-medium flex items-center justify-center space-x-1">
-            <Activity className="h-4 w-4 md:h-5 md:w-5" />
-            <span>All Clear</span>
+          <button
+            onClick={step === 3 ? handleBookEmergency : handleNext}
+            disabled={!validateStep(step)}
+            className="px-6 py-3 bg-red-600 hover:bg-red-700 disabled:bg-gray-400 text-white rounded-lg shadow-[inset_4px_4px_8px_#8b0000,inset_-4px_-4px_8px_#ff4040] transition-shadow duration-200 flex items-center space-x-2"
+          >
+            {step === 3 ? (
+              <>
+                <CreditCard className="h-4 w-4" />
+                <span>Book & Pay ₹{PLATFORM_FEE}</span>
+              </>
+            ) : (
+              <>
+                <span>Next</span>
+                <Clock className="h-4 w-4" />
+              </>
+            )}
           </button>
         </div>
+
+        {showPayment && (
+          <PaymentModal
+            isOpen={showPayment}
+            onClose={() => setShowPayment(false)}
+            amount={PLATFORM_FEE}
+            description={`Emergency ${formData.category} with ${doctors.find(d => d.id === formData.doctor)?.name} (incl. ₹${PLATFORM_FEE} platform fee)`}
+            appointmentData={{
+              doctor: doctors.find(d => d.id === formData.doctor)?.name || '',
+              date: new Date().toISOString().split('T')[0],
+              time: formData.timeslot,
+              type: formData.category,
+            }}
+            onSuccess={handlePaymentSuccess}
+          />
+        )}
       </div>
     </div>
   );

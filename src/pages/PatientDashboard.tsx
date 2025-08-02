@@ -379,10 +379,10 @@ const PatientDashboard = () => {
             </button>
             <button
               onClick={() => handleQuickAction('emergency')}
-              className="bg-rose-600 hover:bg-rose-700 text-white px-4 py-2 rounded-lg font-semibold flex items-center space-x-2 shadow-md transition-colors"
+              className="bg-rose-500 hover:bg-rose-700 text-white px-4 py-2 rounded-lg font-semibold flex items-center space-x-2 shadow-md transition-colors"
             >
-              <Phone className="h-5 w-5" />
-              <span>Emergency</span>
+              {/* <Phone className="h-5 w-5" /> */}
+              <span>🚨 Emergency Slot</span>
             </button>
           </div>
         </div>

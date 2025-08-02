@@ -25,7 +25,8 @@ const AppointmentBookingModal = () => {
 
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
-    name: '',
+    fname: '',
+    lname: '',
     age: '',
     gender: '',
     phone: '',
@@ -54,7 +55,7 @@ const AppointmentBookingModal = () => {
     'General Medicine',
     'Dermatology',
     'Neurology',
-    'Emergency',
+    
     'Psychiatry',
   ];
 
@@ -106,7 +107,7 @@ const AppointmentBookingModal = () => {
     { value: 'follow-up', label: 'Follow-up', duration: 20 },
     { value: 'treatment', label: 'Treatment', duration: 45 },
     { value: 'check-up', label: 'Check-up', duration: 25 },
-    { value: 'emergency', label: 'Emergency', duration: 60 },
+    // { value: 'emergency', label: 'Emergency', duration: 60 },
   ];
 
   const smartTags = ['Diabetes', 'BP', 'Asthma'];
@@ -172,7 +173,7 @@ const AppointmentBookingModal = () => {
   const validateStep = (stepNumber: number) => {
     switch (stepNumber) {
       case 1:
-        return formData.name && formData.age && formData.gender && formData.phone && formData.email && isOtpVerified;
+        return formData.fname && formData.lname && formData.age && formData.gender && formData.phone && formData.email && isOtpVerified;
       case 2:
         return formData.department && formData.doctor && formData.date && formData.time;
       case 3:
@@ -241,7 +242,8 @@ const AppointmentBookingModal = () => {
   const resetForm = () => {
     setStep(1);
     setFormData({
-      name: '',
+      fname: '',
+      lname: '',
       age: '',
       gender: '',
       phone: '',
@@ -324,15 +326,25 @@ const AppointmentBookingModal = () => {
 
         {step === 1 && (
           <div className="space-y-6">
+            <div className="grid grid-cols-2 gap-4">
             <div className="p-4 bg-white rounded-lg shadow-[inset_10px_10px_20px_#f0f0f0,inset_-10px_-10px_20px_#ffffff]">
-              <label className="block text-sm font-medium text-indigo-700 mb-2">Name *</label>
+              <label className="block text-sm font-medium text-indigo-700 mb-2">First Name *</label>
               <input
                 type="text"
-                value={formData.name}
-                onChange={(e) => handleInputChange('name', e.target.value)}
+                value={formData.fname}
+                onChange={(e) => handleInputChange('fname', e.target.value)}
                 className="w-full px-4 py-3 border-none bg-white rounded-lg focus:ring-2 focus:ring-indigo-500 text-indigo-900 shadow-[inset_4px_4px_8px_#e0e0e0,inset_-4px_-4px_8px_#ffffff]"
               />
             </div>
+            <div className="p-4 bg-white rounded-lg shadow-[inset_10px_10px_20px_#f0f0f0,inset_-10px_-10px_20px_#ffffff]">
+              <label className="block text-sm font-medium text-indigo-700 mb-2">Last Name *</label>
+              <input
+                type="text"
+                value={formData.lname}
+                onChange={(e) => handleInputChange('lname', e.target.value)}
+                className="w-full px-4 py-3 border-none bg-white rounded-lg focus:ring-2 focus:ring-indigo-500 text-indigo-900 shadow-[inset_4px_4px_8px_#e0e0e0,inset_-4px_-4px_8px_#ffffff]"
+              />
+            </div></div>
             <div className="grid grid-cols-2 gap-4">
               <div className="p-4 bg-white rounded-lg shadow-[inset_10px_10px_20px_#f0f0f0,inset_-10px_-10px_20px_#ffffff]">
                 <label className="block text-sm font-medium text-indigo-700 mb-2">Age *</label>
