@@ -276,8 +276,17 @@ const PatientDashboard = () => {
       case 'medical-records':
         navigate('/my-records');
         break;
+      case 'my-doctors':
+        navigate('/my-doctors');
+        break;
       case 'emergency':
         navigate('/emergency-contact');
+        break;
+      case 'billing':
+        navigate('/billing-summary');
+        break;
+        case 'profile-settings':
+        navigate('/patient-settings');
         break;
       case 'health-goals':
         setShowHealthGoalsModal(true);
@@ -366,7 +375,7 @@ const PatientDashboard = () => {
       <div className="bg-white/90 rounded-2xl shadow-lg p-6 mb-8 border border-gray-100">
         <div className="flex justify-between gap-5 lg:gap-2 flex-col lg:flex-row items-center mb-6">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Hello, Priya K!</h1>
+            <h1 className="text-3xl font-bold text-gray-900">Hello, Ajith!</h1>
             <p className="text-gray-600 mt-1">12:14 PM IST, Aug 01, 2025</p>
           </div>
           <div className="flex space-x-4">
@@ -447,7 +456,7 @@ const PatientDashboard = () => {
         </div>
 
         <div className="flex space-x-6 mt-8">
-          <button onClick={() => handleQuickAction('payments')} className="bg-gray-100 p-5 rounded-lg flex items-center space-x-3 hover:bg-gray-200 transition-colors">
+          <button onClick={() => handleQuickAction('billing')} className="bg-gray-100 p-5 rounded-lg flex items-center space-x-3 hover:bg-gray-200 transition-colors">
             <CreditCard className="h-6 w-6 text-indigo-600" />
             <span className="text-lg font-medium text-gray-900">Billing</span>
           </button>

@@ -1,260 +1,305 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
-import { Calendar, Clock, User, Plus, Phone, Home, Activity } from 'lucide-react';
-import PaymentModal from '../components/PaymentModal';
+import { Clock, Calendar, Activity, User } from 'lucide-react';
 import toast from 'react-hot-toast';
 
-interface Appointment {
-  id: number;
-  date: string;
-  time: string;
-  doctor: string;
-  department: string;
-  status: 'scheduled' | 'confirmed' | 'checked_in' | 'in_waiting_room' | 'with_doctor' | 'completed' | 'cancelled';
-  type: string;
-  fee: number;
-  paid: boolean;
-  paymentId?: string;
-  expectedDuration: number;
-  estimatedWaitTime: number;
-  queuePosition: number;
-  elapsedTime: number;
+// -- Helper functions --
+const today = 'Aug 02, 2025'; // You may want to automate this with new Date
+function isFuture(dateString) {
+  // Format: 'Aug 03, 2025'
+  return new Date(dateString) > new Date(today);
 }
 
-const MyAppointmentsPage = () => {
-  const navigate = useNavigate();
-  const location = useLocation();
-  const [selectedTab, setSelectedTab] = useState<'upcoming' | 'past' | 'live'>('upcoming');
-  const [showPaymentModal, setShowPaymentModal] = useState(false);
-  const [selectedAppointment, setSelectedAppointment] = useState<Appointment | null>(null);
+// Demo data (doctor replaced by patient)
+const initialAppointments = [
+  { id: 1, date: today, time: '10:30 AM', patient: 'Rohan', status: 'in_waiting_room', type: 'Follow-up' },
+  { id: 2, date: today, time: '11:00 AM', patient: 'Shweta', status: 'with_doctor', type: 'Consultation' },
+  { id: 3, date: today, time: '12:00 PM', patient: 'Ajith Kumar', status: 'confirmed', type: 'Check-up' },
+  { id: 4, date: 'Aug 04, 2025', time: '9:00 AM', patient: 'Priya', status: 'scheduled', type: 'Routine' },
+  { id: 5, date: 'Aug 06, 2025', time: '3:30 PM', patient: 'Sohan', status: 'confirmed', type: 'Lab Test' },
+  { id: 6, date: today, time: '1:00 PM', patient: 'Rahul', status: 'completed', type: 'Check-up' },
+];
+
+// Assume this is the logged-in user who booked the appointment
+const currentUser = 'Ajith Kumar'; // Change to your current user identifier
+
+const getStatusColor = (status) => {
+  switch (status) {
+    case 'scheduled':
+      return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200';
+    case 'confirmed':
+      return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200';
+    case 'checked_in':
+      return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200';
+    case 'in_waiting_room':
+      return 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200';
+    case 'with_doctor':
+      return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200';
+    case 'completed':
+      return 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200';
+    case 'cancelled':
+      return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200';
+    default:
+      return 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200';
+  }
+};
+
+const LiveAppointmentTracker = () => {
+  const [appointments, setAppointments] = useState(initialAppointments);
   const [lastUpdate, setLastUpdate] = useState(new Date());
+  const [search, setSearch] = useState('');
 
-  const [upcomingAppointments, setUpcomingAppointments] = useState<Appointment[]>([
-    { id: 1, date: 'Aug 02, 2025', time: '10:30 AM', doctor: 'Dr. Naresh', department: 'Cardiology', status: 'in_waiting_room', type: 'Follow-up', fee: 150, paid: true, expectedDuration: 30, estimatedWaitTime: 5, queuePosition: 1, elapsedTime: 0 },
-    { id: 2, date: 'Aug 02, 2025', time: '11:00 AM', doctor: 'Dr. Ashok Seth', department: 'Orthopedics', status: 'with_doctor', type: 'Consultation', fee: 200, paid: true, expectedDuration: 20, estimatedWaitTime: 0, queuePosition: 0, elapsedTime: 10 },
-    { id: 3, date: 'Aug 02, 2025', time: '12:00 PM', doctor: 'Dr. Sandeep Vaishya', department: 'Cardiology', status: 'confirmed', type: 'Check-up', fee: 150, paid: false, expectedDuration: 25, estimatedWaitTime: 60, queuePosition: 3, elapsedTime: 0 },
-    { id: 4, date: 'Aug 03, 2025', time: '9:15 AM', doctor: 'Dr. Priya Sharma', department: 'Neurology', status: 'scheduled', type: 'Consultation', fee: 180, paid: false, expectedDuration: 30, estimatedWaitTime: 45, queuePosition: 2, elapsedTime: 0 },
-  ]);
+  /**
+   * Logic:
+   * - liveAppointments includes:
+   *    - appointments on today
+   *    - status !== 'cancelled'
+   *    - includes completed for others (not currentUser)
+   *    - excludes completed for currentUser
+   */
+  const liveAppointments = appointments.filter(
+    (apt) =>
+      apt.date === today &&
+      apt.status !== 'cancelled' &&
+      !(apt.status === 'completed' && apt.patient === currentUser)
+  );
 
-  const pastAppointments: Appointment[] = [
-    { id: 5, date: 'Jul 28, 2025', time: '10:30 AM', doctor: 'Dr. V. P. Singh', department: 'Cardiology', status: 'completed', type: 'Follow-up', fee: 150, paid: true, expectedDuration: 30, estimatedWaitTime: 0, queuePosition: 0, elapsedTime: 30 },
-    { id: 6, date: 'Jul 15, 2025', time: '2:00 PM', doctor: 'Dr. Rana Patir', department: 'Orthopedics', status: 'completed', type: 'Consultation', fee: 200, paid: true, expectedDuration: 20, estimatedWaitTime: 0, queuePosition: 0, elapsedTime: 20 },
-    { id: 7, date: 'Jun 30, 2025', time: '9:15 AM', doctor: 'Dr. Sarah Johnson', department: 'Cardiology', status: 'completed', type: 'Check-up', fee: 150, paid: true, expectedDuration: 25, estimatedWaitTime: 0, queuePosition: 0, elapsedTime: 25 },
-  ];
+  // Upcoming appointments (future dates, not completed or cancelled)
+  const upcomingAppointments = appointments.filter(
+    (apt) => isFuture(apt.date) && apt.status !== 'completed' && apt.status !== 'cancelled'
+  );
 
+  // Past appointments: completed and patient is currentUser only
+  const pastAppointments = appointments.filter(
+    (apt) => apt.status === 'completed' && apt.patient === currentUser
+  );
+
+  // Filter live appointments by search input
+  const filteredLiveAppointments = liveAppointments.filter((a) =>
+    a.patient.toLowerCase().includes(search.toLowerCase())
+  );
+
+  // Simulate status changes
   useEffect(() => {
     const interval = setInterval(() => {
-      setUpcomingAppointments(prev =>
-        prev.map(apt => {
-          let newApt = { ...apt };
-          const isToday = apt.date === 'Aug 02, 2025';
-          if (isToday && ['scheduled', 'confirmed', 'checked_in', 'in_waiting_room', 'with_doctor'].includes(apt.status)) {
+      setAppointments((prev) =>
+        prev.map((apt) => {
+          if (
+            apt.date === today &&
+            ['scheduled', 'confirmed', 'checked_in', 'in_waiting_room', 'with_doctor'].includes(apt.status)
+          ) {
+            let updated = { ...apt };
             switch (apt.status) {
               case 'in_waiting_room':
-                if (apt.estimatedWaitTime > 0) {
-                  newApt.estimatedWaitTime = Math.max(0, apt.estimatedWaitTime - Math.floor(Math.random() * 3) - 1);
-                  if (newApt.estimatedWaitTime <= 2 && Math.random() > 0.7) {
-                    newApt.status = 'with_doctor';
-                    newApt.estimatedWaitTime = 0;
-                    newApt.queuePosition = 0;
-                    toast.success('You are now with the doctor!');
-                  } else if (newApt.queuePosition > 1) {
-                    newApt.queuePosition = Math.max(1, newApt.queuePosition - 1);
-                    if (newApt.queuePosition === 1) {
-                      toast.success('You are next in line!');
-                    }
-                  }
-                }
-                break;
-              case 'checked_in':
-                if (Math.random() > 0.8) {
-                  newApt.status = 'in_waiting_room';
-                  newApt.estimatedWaitTime = Math.max(5, apt.estimatedWaitTime - 5);
-                  newApt.queuePosition = Math.max(1, apt.queuePosition - 1);
-                  toast.success('You are now in the waiting room!');
-                } else {
-                  newApt.estimatedWaitTime = Math.max(0, apt.estimatedWaitTime - Math.floor(Math.random() * 2));
+                if (Math.random() > 0.7) {
+                  updated.status = 'with_doctor';
+                  toast.success(`Patient ${updated.patient} is now with doctor`);
                 }
                 break;
               case 'with_doctor':
-                newApt.elapsedTime = apt.elapsedTime + 1;
-                if (newApt.elapsedTime >= apt.expectedDuration && Math.random() > 0.6) {
-                  newApt.status = 'completed';
-                  newApt.estimatedWaitTime = 0;
-                  toast.success('Your appointment is complete!');
+                if (Math.random() > 0.5) {
+                  updated.status = 'completed';
+                  toast.success(`Appointment for ${updated.patient} completed!`);
                 }
                 break;
               case 'confirmed':
-                if (Math.random() > 0.95) {
-                  newApt.status = 'checked_in';
-                  newApt.estimatedWaitTime = Math.max(10, apt.estimatedWaitTime - 10);
-                  toast.success('You have checked in for your appointment!');
+                if (Math.random() > 0.9) {
+                  updated.status = 'checked_in';
+                  toast.success(`Patient ${updated.patient} has checked in!`);
                 }
                 break;
               case 'scheduled':
-                if (Math.random() > 0.98) {
-                  newApt.status = 'confirmed';
-                  toast.success('Your appointment is confirmed!');
+                if (Math.random() > 0.95) {
+                  updated.status = 'confirmed';
+                  toast.success(`Appointment for ${updated.patient} is confirmed!`);
                 }
                 break;
+              default:
+                break;
             }
+            return updated;
           }
-          return newApt;
+          return apt;
         })
       );
       setLastUpdate(new Date());
-    }, 15000);
-
+    }, 11000);
     return () => clearInterval(interval);
   }, []);
 
-  useEffect(() => {
-    if (location.state?.newAppointment) {
-      const { newAppointment } = location.state;
-      setUpcomingAppointments(prev => [
-        ...prev,
-        {
-          id: newAppointment.id,
-          date: new Date(newAppointment.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
-          time: new Date(`2000-01-01T${newAppointment.time}`).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true }),
-          doctor: newAppointment.doctorName,
-          department: newAppointment.department,
-          status: newAppointment.status,
-          type: newAppointment.type,
-          fee: newAppointment.fee,
-          paid: newAppointment.paymentStatus === 'paid',
-          paymentId: newAppointment.paymentId,
-          expectedDuration: parseInt(newAppointment.duration),
-          estimatedWaitTime: 60,
-          queuePosition: 5,
-          elapsedTime: 0,
-        },
-      ]);
-      toast.success('Appointment booked successfully!');
-      navigate('/my-appointments', { state: {}, replace: true });
-    }
-  }, [location.state, navigate]);
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'scheduled': return 'bg-blue-100 text-blue-800';
-      case 'confirmed': return 'bg-green-100 text-green-800';
-      case 'checked_in': return 'bg-yellow-100 text-yellow-800';
-      case 'in_waiting_room': return 'bg-orange-100 text-orange-800';
-      case 'with_doctor': return 'bg-green-100 text-green-800';
-      case 'completed': return 'bg-gray-100 text-gray-800';
-      case 'cancelled': return 'bg-red-100 text-red-800';
-      default: return 'bg-gray-100 text-gray-800';
-    }
-  };
-
-  const handlePayNow = (appointment: Appointment) => {
-    setSelectedAppointment(appointment);
-    setShowPaymentModal(true);
-  };
-
-  const handlePaymentSuccess = (paymentId: string) => {
-    toast.success('Payment completed successfully!');
-    setUpcomingAppointments(prev =>
-      prev.map(apt =>
-        apt.id === selectedAppointment?.id
-          ? { ...apt, paid: true, paymentId }
-          : apt
-      )
-    );
-    setShowPaymentModal(false);
-    setSelectedAppointment(null);
-  };
-
-  const appointments = selectedTab === 'upcoming' ? upcomingAppointments : selectedTab === 'past' ? pastAppointments : upcomingAppointments.filter(apt => apt.date === 'Aug 02, 2025');
-
   return (
-    <div className="min-h-screen bg-gray-50 p-4">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-4">
-        <button
-          onClick={() => navigate('/patient-dashboard')}
-          className="bg-blue-600 text-white px-3 py-2 rounded-lg flex items-center space-x-1 mb-2 md:mb-0"
-        >
-          <Home className="h-4 w-4" />
-          <span className="text-sm">Back to Home</span>
-        </button>
-        <div>
-          <h1 className="text-xl font-bold text-gray-900">My Appointments</h1>
-          <p className="text-gray-600 text-sm">View and manage your appointments</p>
-        </div>
-        <button
-          onClick={() => navigate('/book-appointment')}
-          className="bg-blue-600 text-white px-3 py-2 rounded-lg flex items-center space-x-1 mt-2 md:mt-0"
-        >
-          <Plus className="h-4 w-4" />
-          <span className="text-sm">Book Appointment</span>
-        </button>
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-4 md:p-10">
+      {/* Header and Last Update */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
+        <h1 className="text-2xl md:text-3xl font-bold text-blue-900">My Appointments</h1>
+        <span className="text-sm text-gray-500 flex items-center gap-2">
+          <Clock className="h-4 w-4" />
+          Last updated {lastUpdate.toLocaleTimeString()}
+        </span>
       </div>
 
-      <div className="flex flex-col md:flex-row items-center space-y-2 md:space-y-0 md:space-x-2 mb-4">
-        <button
-          onClick={() => setSelectedTab('upcoming')}
-          className={`px-3[], py-2 rounded-lg font-medium ${selectedTab === 'upcoming' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
-        >
-          Upcoming ({upcomingAppointments.length})
-        </button>
-        <button
-          onClick={() => setSelectedTab('past')}
-          className={`px-3 py-2 rounded-lg font-medium ${selectedTab === 'past' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
-        >
-          Past ({pastAppointments.length})
-        </button>
-        <button
-          onClick={() => setSelectedTab('live')}
-          className={`px-3 py-2 rounded-lg font-medium ${selectedTab === 'live' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
-        >
-          Live Tracking
-        </button>
+      {/* Live Tracking */}
+      <div>
+        <h2 className="text-xl font-semibold mb-4 text-blue-900">Live Tracking</h2>
+
+        {/* Search box */}
+        {/* Uncomment below if search needed */}
+        {/* <div className="mb-4">
+          <input
+            type="text"
+            placeholder="Search patient..."
+            className="w-full md:w-64 border rounded-md px-3 py-2 text-sm focus:outline-none focus:ring"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            aria-label="Search patients"
+          />
+        </div> */}
+
+        {filteredLiveAppointments.length === 0 ? (
+          <div className="p-8 text-center text-gray-500 text-lg">
+            No ongoing appointments for today.
+          </div>
+        ) : (
+          <div className="space-y-6">
+            {filteredLiveAppointments.map((apt) => {
+              const isCurrentUser = apt.patient === currentUser;
+              return (
+                <div
+                  key={apt.id}
+                  className={`bg-white rounded-2xl shadow-lg p-6 flex flex-col md:flex-row md:items-center justify-between border-l-4 ${
+                    isCurrentUser ? 'border-blue-600 bg-blue-50' : 'border-blue-500'
+                  }`}
+                >
+                  <div className="flex gap-4 items-center w-full md:w-auto">
+                    <div className="w-12 h-12 rounded-xl bg-blue-100 flex items-center justify-center">
+                      <Activity className="h-6 w-6 text-blue-600" />
+                    </div>
+                    <div>
+                      <h2
+                        className={`text-xl font-semibold ${
+                          isCurrentUser ? 'text-blue-900' : 'text-blue-800'
+                        } flex items-center`}
+                      >
+                        <User className="h-5 w-5 inline-block mb-1 mr-1" />
+                        {apt.patient}
+                        {isCurrentUser && (
+                          <span className="ml-3 inline-block bg-blue-600 text-white text-xs font-medium px-2 py-0.5 rounded-full select-none">
+                            You
+                          </span>
+                        )}
+                      </h2>
+                      <div className="flex flex-wrap items-center gap-2 text-base text-gray-600">
+                        <Calendar className="h-4 w-4" /> {apt.date}
+                        <span className="mx-1">|</span>
+                        <Clock className="h-4 w-4" /> {apt.time}
+                        <span className="mx-1">|</span>
+                        <span className="font-medium">{apt.type}</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="mt-4 md:mt-0 flex flex-col md:items-end">
+                    <span
+                      className={`self-start md:self-end px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(
+                        apt.status
+                      )}`}
+                    >
+                      {apt.status.replace(/_/g, ' ')}
+                    </span>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
       </div>
 
-      <div className="bg-white rounded-2xl">
-        <div className="p-4 border-b```typescriptreact
-        border-b border-gray-200">
-          <h2 className="text-lg font-semibold text-gray-900">
-            {selectedTab === 'upcoming' ? 'Upcoming Appointments' : selectedTab === 'past' ? 'Past Appointments' : 'Live Appointment Tracking'}
-          </h2>
-        </div>
-
-        <div className="divide-y divide-gray-200">
-          {appointments.length === 0 && selectedTab === 'live' && (
-            <div className="p-4 text-center text-gray-500">
-              No live appointments today.
-            </div>
-          )}
-          {appointments.map((appointment) => (
-            <div
-              key={appointment.id}
-              className={`p-4 ${selectedTab === 'live' && appointment.status !== 'completed' && appointment.status !== 'cancelled' ? 'bg-blue-50' : ''}`}
-            >
-              <div className="flex flex-col md:flex-row justify-between">
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-900">{appointment.doctor}</h3>
-                  <p className="text-gray-600">{appointment.date} at {appointment.time}</p>
-                  <span className={`mt-1 px-2 py-1 text-sm font-medium rounded-full ${getStatusColor(appointment.status)}`}>
-                    {appointment.status === 'in_waiting_room' ? 'Waiting' : appointment.status === 'with_doctor' ? 'With Doctor' : appointment.status}
+      {/* Upcoming Appointments */}
+      <div className="mt-12">
+        <h2 className="text-xl font-semibold mb-4 text-blue-700">Upcoming Appointments</h2>
+        {upcomingAppointments.length === 0 ? (
+          <div className="p-8 text-center text-gray-400">No upcoming future appointments.</div>
+        ) : (
+          <div className="space-y-6">
+            {upcomingAppointments.map((apt) => {
+              const isCurrentUser = apt.patient === currentUser;
+              return (
+                <div
+                  key={apt.id}
+                  className={`bg-white rounded-2xl shadow border border-blue-100 p-6 flex flex-col md:flex-row md:items-center justify-between ${
+                    isCurrentUser ? 'bg-blue-50 border-blue-600' : ''
+                  }`}
+                >
+                  <div className="flex gap-4 items-center w-full md:w-auto">
+                    <User className="h-7 w-7 text-blue-300" />
+                    <div>
+                      <h2 className={`text-lg font-semibold ${isCurrentUser ? 'text-blue-900' : 'text-blue-800'}`}>
+                        {apt.patient}
+                        {isCurrentUser && (
+                          <span className="ml-3 inline-block bg-blue-600 text-white text-xs font-medium px-2 py-0.5 rounded-full select-none">
+                            You
+                          </span>
+                        )}
+                      </h2>
+                      <div className="flex gap-3 text-sm text-gray-600">
+                        <Calendar className="h-4 w-4" /> {apt.date}
+                        <Clock className="h-4 w-4 ml-3" /> {apt.time}
+                        <span className="ml-3 font-medium">{apt.type}</span>
+                      </div>
+                    </div>
+                  </div>
+                  <span
+                    className={`mt-3 md:mt-0 px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(
+                      apt.status
+                    )}`}
+                  >
+                    {apt.status.replace(/_/g, ' ')}
                   </span>
                 </div>
-              </div>
-            </div>
-          ))}
-        </div>
+              );
+            })}
+          </div>
+        )}
       </div>
 
-      <PaymentModal
-        isOpen={showPaymentModal}
-        onClose={() => setShowPaymentModal(false)}
-        amount={selectedAppointment?.fee || 0}
-        description={`${selectedAppointment?.department} ${selectedAppointment?.type}`}
-        appointmentData={selectedAppointment}
-        onSuccess={handlePaymentSuccess}
-      />
+      {/* Past (completed of current user only) */}
+      <div className="mt-12">
+        <h2 className="text-xl font-semibold mb-4 text-gray-900">My Completed Appointments</h2>
+        {pastAppointments.length === 0 ? (
+          <div className="p-8 text-center text-gray-400">You have no completed appointments.</div>
+        ) : (
+          <div className="space-y-5">
+            {pastAppointments.map((apt) => {
+              return (
+                <div
+                  key={apt.id}
+                  className="bg-blue-50 border border-blue-600 rounded-xl p-6 flex flex-col md:flex-row md:items-center justify-between"
+                >
+                  <div className="flex gap-4 items-center w-full md:w-auto">
+                    <User className="h-7 w-7 text-blue-600" />
+                    <div>
+                      <h2 className="text-lg font-semibold text-blue-900">
+                        {apt.patient}
+                        <span className="ml-3 inline-block bg-blue-600 text-white text-xs font-medium px-2 py-0.5 rounded-full select-none">
+                          You
+                        </span>
+                      </h2>
+                      <div className="flex flex-wrap gap-3 text-sm text-blue-800">
+                        <Calendar className="h-4 w-4" /> {apt.date}
+                        <Clock className="h-4 w-4 ml-4" /> {apt.time}
+                        <span className="ml-4 font-medium">{apt.type}</span>
+                      </div>
+                    </div>
+                  </div>
+                  <span className="mt-3 md:mt-0 px-3 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                    Completed
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
     </div>
   );
 };
 
-export default MyAppointmentsPage;
+export default LiveAppointmentTracker;

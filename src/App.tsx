@@ -23,7 +23,10 @@ import AIInsightsPage from './pages/AIInsightsPage';
 import EmergencyPage from './pages/EmergencyPage';
 import HealthTrackingPage from './pages/HealthTrackingPage';
 import InsurancePage from './pages/InsurancePage';
+import ProfileSettings from './pages/ProfileSettings';
+import Billing from './pages/Billing';
 import AppointmentBookingPage from './components/AppointmentBookingModal';
+import MyDoctors from './pages/MyDoctors';
 
 function App() {
   return (
@@ -136,6 +139,14 @@ function App() {
                 }
               />
               <Route
+                path="/my-doctors"
+                element={
+                  <ProtectedRoute requiredRole="patient">
+                    <MyDoctors />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
                 path="/payments"
                 element={
                   <ProtectedRoute requiredRole="patient">
@@ -176,6 +187,14 @@ function App() {
                 }
               />
               <Route
+                path="/billing-summary"
+                element={
+                  <ProtectedRoute requiredRole="patient">
+                    <Billing />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
                 path="/emergency-contact"
                 element={
                   <ProtectedRoute requiredRole="patient">
@@ -197,7 +216,7 @@ function App() {
                 path="/patient-settings"
                 element={
                   <ProtectedRoute requiredRole="patient">
-                    <SettingsPage />
+                    <ProfileSettings />
                   </ProtectedRoute>
                 }
               />
