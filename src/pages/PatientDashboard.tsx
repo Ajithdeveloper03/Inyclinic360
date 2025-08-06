@@ -376,7 +376,7 @@ const PatientDashboard = () => {
         <div className="flex justify-between gap-5 lg:gap-2 flex-col lg:flex-row items-center mb-6">
           <div>
             <h1 className="text-3xl font-bold text-gray-900">Hello, Ajith!</h1>
-            <p className="text-gray-600 mt-1">12:14 PM IST, Aug 01, 2025</p>
+            <p className="text-gray-600 mt-1">12:14 PM IST, Aug 07, 2025</p>
           </div>
           <div className="flex space-x-4">
             <button
