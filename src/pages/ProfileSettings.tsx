@@ -52,7 +52,7 @@ export default function EliteProfileSettings() {
   // Quick actions for elite look
   const quickActions = [
     { icon: <CreditCard className="text-cyan-600" />, label: "Add Payment", onClick: () => alert("Add Payment") },
-    { icon: <Lock className="text-yellow-600" />, label: "Change Password", onClick: () => alert("Change Password") },
+    // { icon: <Lock className="text-yellow-600" />, label: "Change Password", onClick: () => alert("Change Password") },
     { icon: <Bell className="text-pink-500" />, label: "Notification Settings", onClick: () => setOpen(o => ({ ...o, notify: true })) },
     { icon: <User className="text-violet-600" />, label: "Edit Profile", onClick: () => setOpen(o => ({ ...o, personal: true })) },
   ];
@@ -112,7 +112,7 @@ export default function EliteProfileSettings() {
       <main className="w-full max-w-3xl mx-auto space-y-7 px-2">
         {/* PERSONAL INFO */}
         <EliteSectionCard open={open.personal} onToggle={() => toggle("personal")} icon={<User className="text-blue-600" />} label="Personal Information">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6">
+          <div className="grid grid-cols-1 md:grid-cols-1 gap-x-6">
             <EliteItem label="Name" value={profile.name} />
             <EliteItem label="Date of Birth" value={profile.dob} icon={<Calendar className="text-blue-400" size={16} />} />
             <EliteItem label="Gender" value={profile.gender} />
@@ -123,7 +123,7 @@ export default function EliteProfileSettings() {
 
         {/* CONTACT DETAILS */}
         <EliteSectionCard open={open.contact} onToggle={() => toggle("contact")} icon={<Mail className="text-blue-600" />} label="Contact Details">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6">
+          <div className="grid grid-cols-1 md:grid-cols-1 gap-x-6">
             <EliteItem label="Email" value={profile.email} />
             <EliteItem label="Phone" value={profile.phone} icon={<Phone className="text-green-400" size={16} />} />
             <EliteItem label="WhatsApp" value={profile.whatsapp} icon={<MessageCircle className="text-green-400" size={16} />} />
@@ -138,7 +138,7 @@ export default function EliteProfileSettings() {
 
         {/* PREFERENCES */}
         <EliteSectionCard open={open.preferences} onToggle={() => toggle("preferences")} icon={<Globe className="text-blue-600" />} label="Preferences">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-1 gap-x-8 gap-y-4">
             <EliteLabelWithIcon icon={<Languages />} label="Language">
               {LANGS.map(l => (
                 <button key={l.code} className={`mr-2 px-4 py-2 rounded-lg border ${lang === l.code ? "bg-blue-600 text-white border-blue-600 font-semibold" : "bg-white hover:bg-blue-50 text-gray-900 border-gray-300"}`} onClick={() => setLang(l.code)}>
@@ -158,7 +158,7 @@ export default function EliteProfileSettings() {
 
         {/* MEDICAL INFORMATION */}
         <EliteSectionCard open={open.medical} onToggle={() => toggle("medical")} icon={<Shield className="text-blue-600" />} label="Medical Information">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6">
+          <div className="grid grid-cols-1 md:grid-cols-1 gap-x-6">
             <EliteItem label="Blood Group" value={profile.bloodGroup} />
             <EliteItem label="Allergies" value={profile.allergies} />
             <EliteItem label="Chronic Conditions" value={profile.chronic} />
@@ -169,7 +169,7 @@ export default function EliteProfileSettings() {
 
         {/* PAYMENT METHODS */}
         <EliteSectionCard open={open.payment} onToggle={() => toggle("payment")} icon={<CreditCard className="text-blue-600" />} label="Payment Methods">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6">
+          <div className="grid grid-cols-1 md:grid-cols-1 gap-x-6">
             <EliteItem label="Primary Card" value={profile.card} />
             <EliteItem label="UPI ID" value={profile.upi} />
             <EliteItem label="Wallet" value={profile.wallet} />
@@ -207,7 +207,7 @@ export default function EliteProfileSettings() {
           <div className="flex flex-col gap-2 text-lg font-medium">
             <a href="#" className="hover:underline text-blue-700">Privacy Policy</a>
             <a href="#" className="hover:underline text-blue-700">Terms of Service</a>
-            <a href="#" className="hover:underline text-blue-700">Data Usage</a>
+            <a href="#" className="hover:underline text-blue-700">Refund policy</a>
           </div>
         </EliteSectionCard>
 

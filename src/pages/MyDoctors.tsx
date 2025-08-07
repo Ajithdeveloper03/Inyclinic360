@@ -107,7 +107,7 @@ const statusBadgeColor = (status) => {
 
 const MyDoctors = () => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [filter, setFilter] = useState('all'); // all, mydoctors
+  const [filter, setFilter] = useState('mydoctors'); // all, mydoctors
   const navigate = useNavigate();
 
   // Tab/filter logic

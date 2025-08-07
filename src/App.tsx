@@ -7,6 +7,7 @@ import LandingPage from './pages/LandingPage';
 import ClinicDashboard from './pages/ClinicDashboard';
 import PatientDashboard from './pages/PatientDashboard';
 import Login from './pages/Login';
+import Register from './pages/Register';
 import ProtectedRoute from './components/ProtectedRoute';
 import AppointmentsPage from './pages/AppointmentsPage';
 import PatientsPage from './pages/PatientsPage';
@@ -36,6 +37,7 @@ function App() {
           <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-200">
             <Routes>
               <Route path="/" element={<LandingPage />} />
+              <Route path="/register" element={<Register />} />
               <Route path="/login" element={<Login />} />
               <Route path="/book-appointment" element={<AppointmentBookingPage />} />
 
